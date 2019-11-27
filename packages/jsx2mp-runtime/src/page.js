@@ -10,7 +10,7 @@ import {
   ON_TITLE_CLICK
 } from './cycles';
 import { useEffect } from './hooks';
-import { getMiniAppHistory } from './history';
+import { getMiniAppHistory } from '@@HISTORY@@';
 
 const history = getMiniAppHistory();
 

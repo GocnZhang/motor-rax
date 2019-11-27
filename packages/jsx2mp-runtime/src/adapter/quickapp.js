@@ -1,44 +1,41 @@
-/* global wx */
+/* global @system */
+import router from '@system.router';
 
 export function redirectTo(options) {
-  wx.redirectTo(options);
+  options.uri = options.url;
+  router.replace(options);
 }
 
 export function navigateTo(options) {
-  wx.navigateTo(options);
+  options.uri = options.url;
+  router.push(options);
 }
 
 export function navigateBack(options) {
-  wx.navigateBack(options);
+  router.back();
 }
 
 export function getComponentLifecycle({ mount, unmount }) {
-  function attached() {
-    return mount.apply(this, arguments);
-  }
-
-  function detached() {
-    return unmount.apply(this, arguments);
-  }
-
   return {
-    lifetimes: {
-      attached,
-      detached,
+    onInit() {
+      mount.apply(this, arguments);
     },
-    // Keep compatibility to wx base library version < 2.2.3
-    attached,
-    detached,
+    onReady() {}, // noop
+    onShow() {}, // noop
+    onHide() {}, // noop
+    onDestroy() {
+      unmount.apply(this, arguments);
+    },
   };
 }
 
 export function getPageLifecycle({ mount, unmount, show, hide }) {
   return {
-    onLoad() {
+    onInit() {
       mount.apply(this, arguments);
     },
     onReady() {}, // noop
-    onUnload() {
+    onDestroy() {
       unmount.apply(this, arguments);
     },
     onShow() {
@@ -52,24 +49,20 @@ export function getPageLifecycle({ mount, unmount, show, hide }) {
 
 export function getComponentBaseConfig() {
   return {
-    properties: {
-      TAGID: null,
-      PARENTID: null,
-    },
-    options: {
-      addGlobalClass: true,
-    }
+    props: {},
   };
 }
 
 export function attachEvent(isPage, config, proxiedMethods) {
-  if (isPage) {
-    Object.assign(config, proxiedMethods);
-  } else {
-    config.methods = proxiedMethods;
-  }
+  Object.assign(config, proxiedMethods);
 }
 
 export function updateData(data) {
-  this._internal.setData(data);
+  Object.keys(data).map(item => {
+    if (!(item in this._internal)) {
+      this._internal.$set(item, data[item])
+    } else {
+      this._internal[item] = data[item]
+    }
+  })
 }

@@ -2,6 +2,7 @@
 /**
  * Base Component class definition.
  */
+import { updateData } from '@@ADAPTER@@';
 import Host from './host';
 import {updateChildProps, removeComponentProps, getComponentProps} from './updater';
 import {enqueueRender} from './enqueueRender';
@@ -24,7 +25,7 @@ import {
   COMPONENT_WILL_RECEIVE_PROPS, COMPONENT_WILL_UPDATE,
 } from './cycles';
 import { cycles as pageCycles } from './page';
-import getId from './getId';
+import getId from '@@GETID@@';
 
 export default class Component {
   constructor() {
@@ -89,7 +90,7 @@ export default class Component {
   _updateData(data) {
     if (!this._internal) return;
     data.$ready = true;
-    data.__tagId = this.props.__tagId;
+    data[TAGID] = this.props[TAGID];
     this.__updating = true;
     this._setData(data);
   }
@@ -99,7 +100,7 @@ export default class Component {
   }
 
   _updateChildProps(tagId, props) {
-    const chlidInstanceId = `${this.props.__tagId}-${tagId}`;
+    const chlidInstanceId = `${this.props[TAGID]}-${tagId}`;
     updateChildProps(this, chlidInstanceId, props);
   }
 
@@ -326,39 +327,18 @@ export default class Component {
     const tagId = getId('tag', internal);
     this.instanceId = `${parentId}-${tagId}`;
     this.props = Object.assign({}, internal[PROPS], {
-      __tagId: tagId,
-      __parentId: parentId
+      TAGID: tagId,
+      PARENTID: parentId
     }, getComponentProps(this.instanceId));
     if (!this.state) this.state = {};
-    Object.assign(this.state, internal.data);
+    Object.assign(this.state, internal[DATA]);
   }
   /**
    * Internal set data method
    * @param data {Object}
    * */
   _setData(data) {
-    // In alibaba miniapp can use $spliceData optimize long list
-    if (this._internal.$spliceData) {
-      const useSpliceData = {};
-      const useSetData = {};
-      for (let key in data) {
-        if (Array.isArray(data[key]) && diffArray(this.state[key], data[key])) {
-          useSpliceData[key] = [this.state[key].length, 0].concat(data[key].slice(this.state[key].length));
-        } else {
-          if (diffData(this.state[key], data[key])) {
-            useSetData[key] = data[key];
-          }
-        }
-      }
-      if (!isEmptyObj(useSetData)) {
-        this._internal.setData(useSetData);
-      }
-      if (!isEmptyObj(useSpliceData)) {
-        this._internal.$spliceData(useSpliceData);
-      }
-    } else {
-      this._internal.setData(data);
-    }
+    updateData.call(this, data);
     Object.assign(this.state, data);
   }
 }

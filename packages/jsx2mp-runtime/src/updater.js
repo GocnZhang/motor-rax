@@ -36,8 +36,8 @@ export function updateChildProps(trigger, instanceId, nextProps) {
     if (targetComponent) {
       propsMap[instanceId] = Object.assign(
         {
-          __parentId: trigger.props.__tagId,
-          __tagId: instanceId
+          PARENTID: trigger.props[TAGID],
+          TAGID: instanceId
         },
         targetComponent.props,
         nextProps,

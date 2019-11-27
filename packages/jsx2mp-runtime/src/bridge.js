@@ -3,10 +3,10 @@ import { cycles as appCycles } from './app';
 import Component from './component';
 import { ON_SHOW, ON_HIDE, ON_PAGE_SCROLL, ON_SHARE_APP_MESSAGE, ON_REACH_BOTTOM, ON_PULL_DOWN_REFRESH, ON_TAB_ITEM_TAP, ON_TITLE_CLICK } from './cycles';
 import { setComponentInstance, getComponentProps } from './updater';
-import { getComponentLifecycle, getComponentBaseConfig } from '@@ADAPTER@@';
-import { createMiniAppHistory } from './history';
+import { getPageLifecycle, getComponentLifecycle, getComponentBaseConfig, attachEvent } from '@@ADAPTER@@';
+import { createMiniAppHistory } from '@@HISTORY@@';
 import { __updateRouterMap } from './router';
-import getId from './getId';
+import getId from '@@GETID@@';
 
 const GET_DERIVED_STATE_FROM_PROPS = 'getDerivedStateFromProps';
 let _appConfig;
@@ -22,8 +22,8 @@ let _pageProps = {};
  *    setData     <--------------    setState
  */
 function getPageCycles(Klass) {
-  let config = {
-    onLoad(options) {
+  let config = getPageLifecycle({
+    mount(options) {
       // Ensure page has loaded
       const history = createMiniAppHistory();
       this.instance = new Klass(Object.assign(this[PROPS], _pageProps));
@@ -41,17 +41,16 @@ function getPageCycles(Klass) {
       this.instance.__ready = true;
       this.instance._mountComponent();
     },
-    onReady() {}, // noop
-    onUnload() {
+    unmount() {
       this.instance._unmountComponent();
     },
-    onShow() {
+    show() {
       if (this.instance.__mounted) this.instance._trigger(ON_SHOW);
     },
-    onHide() {
+    hide() {
       if (this.instance.__mounted) this.instance._trigger(ON_HIDE);
     }
-  };
+  });
   [ON_PAGE_SCROLL, ON_SHARE_APP_MESSAGE, ON_REACH_BOTTOM, ON_PULL_DOWN_REFRESH, ON_TAB_ITEM_TAP, ON_TITLE_CLICK].forEach((hook) => {
     config[hook] = function(e) {
       return this.instance._trigger(hook, e);
@@ -68,8 +67,8 @@ function getComponentCycles(Klass) {
       const instanceId = `${parentId}-${tagId}`;
 
       const props = Object.assign({}, this[PROPS], {
-        __tagId: tagId,
-        __parentId: parentId
+        TAGID: tagId,
+        PARENTID: parentId
       }, getComponentProps(instanceId));
       this.instance = new Klass(props);
       this.instance.instanceId = instanceId;
@@ -127,8 +126,18 @@ function createProxyMethods(events) {
         }
         // Concat args.
         args = datasetArgs.concat(args);
+
+        // quickapp
+        const evt = Object.assign({}, args[0]);
+        if (args[0] && args[0]._target && !args[0].currentTarget) {
+          evt.currentTarget = Object.assign({}, args[0]._target);
+          evt.currentTarget.dataset = args[0]._target._dataset;
+        }
+
+        const __args = [evt, ...args.slice(1)];
+
         if (this.instance._methods[eventName]) {
-          return this.instance._methods[eventName].apply(context, args);
+          return this.instance._methods[eventName].apply(context, __args);
         } else {
           console.warn(`instance._methods['${eventName}'] not exists.`);
         }
@@ -166,11 +175,8 @@ function createConfig(component, options) {
   };
 
   const proxiedMethods = createProxyMethods(events);
-  if (isPage) {
-    Object.assign(config, proxiedMethods);
-  } else {
-    config.methods = proxiedMethods;
-  }
+
+  attachEvent.call(this, isPage, config, proxiedMethods);
 
   return config;
 }

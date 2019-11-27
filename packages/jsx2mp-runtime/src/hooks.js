@@ -4,7 +4,7 @@ import sameValue from './sameValue';
 import isFunction from './isFunction';
 import { COMPONENT_DID_MOUNT, COMPONENT_DID_UPDATE, COMPONENT_WILL_UNMOUNT } from './cycles';
 import { enqueueRender } from './enqueueRender';
-import { createMiniAppHistory } from './history';
+import { createMiniAppHistory } from '@@HISTORY@@';
 
 const history = createMiniAppHistory();
 

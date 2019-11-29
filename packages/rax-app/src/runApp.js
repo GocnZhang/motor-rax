@@ -1,6 +1,6 @@
 import { render, createElement, useState, useEffect, Fragment } from 'rax';
 import { Navigation, TabBar } from 'rax-pwa';
-import { isWeex, isWeb } from 'universal-env';
+import { isWeex, isWeb, isKraken } from 'universal-env';
 import { useRouter } from 'rax-use-router';
 import { createMemoryHistory, createHashHistory, createBrowserHistory } from 'history';
 import UniversalDriver from 'driver-universal';
@@ -12,6 +12,7 @@ const SHELL_DATA = 'shellData';
 
 let history;
 let launched = false;
+let driver = UniversalDriver;
 const initialDataFromSSR = global[INITIAL_DATA_FROM_SSR];
 
 export function getHistory() {
@@ -91,7 +92,12 @@ export default function runApp(appConfig, pageProps = {}) {
   launched = true;
   const { hydrate = false, routes, shell } = appConfig;
 
-  if (isWeex) {
+  // Set custom driver
+  if (typeof appConfig.driver !== 'undefined') {
+    driver = appConfig.driver;
+  }
+
+  if (isWeex || isKraken) {
     history = createMemoryHistory();
   } else if (initialDataFromSSR) {
     // If that contains `initialDataFromSSR`, which means SSR is enabled,
@@ -124,14 +130,14 @@ export default function runApp(appConfig, pageProps = {}) {
       // Emit app launch cycle.
       emit('launch');
 
-      let rootEl = isWeex ? null : document.getElementById('root');
+      let rootEl = isWeex || isKraken ? null : document.getElementById('root');
       if (isWeb && rootEl === null) throw new Error('Error: Can not find #root element, please check which exists in DOM.');
 
       // Async render.
       return render(
         appInstance,
         rootEl,
-        { driver: UniversalDriver, hydrate }
+        { driver, hydrate }
       );
     })
     .catch((err) => {

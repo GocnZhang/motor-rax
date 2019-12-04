@@ -6,6 +6,8 @@
   "dependencies": {
     "rax": "^1.0.8",
     "rax-image": "^1.1.1",
-    "rax-view": "^1.0.2"
+    "rax-app": "^0.2.0",
+    "rax-view": "^1.0.2",
+    "rax-text": "^1.0.0"
   }
 }

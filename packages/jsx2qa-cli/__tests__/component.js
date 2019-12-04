@@ -2,7 +2,7 @@ const { readFileSync } = require('fs');
 const { join } = require('path');
 const { execSync } = require('child_process');
 
-const compileCommand = '../bin/jsx2qa.js build --type component --entry ./component --turn-off-check-update';
+const compileCommand = '../bin/jsx2qa.js build --turn-off-check-update';
 
 let jsonContent, jsContent, cssContent, axmlContent;
 
@@ -19,10 +19,10 @@ beforeAll(() => {
   execSyncWithCwd(`cd demo && npm install --no-package-lock && ${compileCommand}`);
 
   // read from file and get compiled result
-  jsonContent = readFileSync(join(cwd, 'demo/dist/src/component.json'), {encoding: 'utf8'});
-  jsContent = readFileSync(join(cwd, 'demo/dist/src/component.js'), {encoding: 'utf8'});
-  cssContent = readFileSync(join(cwd, 'demo/dist/src/component.css'), {encoding: 'utf8'});
-  axmlContent = readFileSync(join(cwd, 'demo/dist/src/component.ux'), {encoding: 'utf8'});
+  jsonContent = readFileSync(join(cwd, 'demo/dist/src/pages/Home/component.json'), {encoding: 'utf8'});
+  jsContent = readFileSync(join(cwd, 'demo/dist/src/pages/Home/component.js'), {encoding: 'utf8'});
+  cssContent = readFileSync(join(cwd, 'demo/dist/src/pages/Home/component.css'), {encoding: 'utf8'});
+  axmlContent = readFileSync(join(cwd, 'demo/dist/src/pages/Home/component.ux'), {encoding: 'utf8'});
 });
 
 // afterAll(() => {

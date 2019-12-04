@@ -25,10 +25,7 @@ module.exports = class JSX2MPRuntimePlugin {
           ? runtimePackageJSON.miniprogram[this.platform]
           : runtimePackageJSON.main || 'index.js';
         const sourceFile = require.resolve(join(runtimePackagePath, runtimeTargetPath));
-        const targetFile = join(compiler.outputPath, 'npm', runtime + '.js');
-
-        console.log('sourceFile', sourceFile);
-        console.log('targetFile', targetFile);
+        const targetFile = join(compiler.outputPath, 'npm/jsx2mp-runtime.js');
 
         if (this.mode === 'build') {
           const sourceCode = minify(readFileSync(sourceFile, 'utf-8')).code;

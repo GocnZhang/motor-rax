@@ -4,9 +4,43 @@ const path = require('path')
 const { downloadGithubRepoLatestRelease } = require('./utils/quickapp');
 const spinner = require('./utils/spinner');
 const { unzip } = require('./utils/file');
+const defaultManifestJSON = require('./utils/defaultManifest.json');
 
-function generateQuickAppManifest() {
+function generateQuickAppManifest (options) {
+  const quickappJSON = defaultManifestJSON;
+  const { distDirectory } = options;
+  let router = {};
+  let display = {};
+  if (fs.existsSync(path.join(distDirectory, '/src/app.json'))) {
+    // 生成 router
+    const appConfig = fs.readJSONSync(path.join(distDirectory, '/src/app.json'));
+    const pages = appConfig.pages || [];
+    const routerPages = {};
+    pages.forEach(element => {
+      const pageConf = {
+        component: path.basename(element)
+      };
+      routerPages[path.dirname(element)] = pageConf;
+    });
+    const routerEntry = pages.shift();
+    router = {
+      entry: path.dirname(routerEntry),
+      pages: routerPages
+    };
 
+    // 生成 display
+    const display = JSON.parse(JSON.stringify(appConfig.window || {}));
+    display.pages = {};
+
+    if (appConfig.window && appConfig.window.defaultTitle) {
+      quickappJSON.name = appConfig.window.defaultTitle;
+    }
+
+    quickappJSON.router = router;
+    quickappJSON.display = display;
+
+    fs.writeFileSync(path.join(distDirectory, '/src/manifest.json'), JSON.stringify(quickappJSON, null, 2))
+  }
 }
 
 async function prepareQuickAppEnvironment (workDirectory, distDirectory) {
@@ -25,12 +59,13 @@ async function prepareQuickAppEnvironment (workDirectory, distDirectory) {
   } else {
     console.log(`${chalk.green('✔ ')} 快应用容器已经准备好`);
   }
-  // process.chdir(distDirectory)
+  isReady = true;
+  return isReady;
 }
 
 module.exports = async (options = {}) => {
   let { entryPath, type, workDirectory, distDirectory, mode, constantDir, disableCopyNpm } = options;
-  generateQuickAppManifest();
+  generateQuickAppManifest(options);
   const isReady = await prepareQuickAppEnvironment(workDirectory, distDirectory);
   if (!isReady) {
     console.log();

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "jest",
-    "test:watch": "npm run test -- --watchAll"
+    "test:watch": "npm run test -- --watchAll",
+    "start": "./bin/jsx2qa.js start --entry ./demo/src/app.js"
   },
   "homepage": "https://github.com/alibaba/rax#readme",
   "engine": {

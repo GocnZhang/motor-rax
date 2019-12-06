@@ -1,14 +1,13 @@
 import { createElement } from 'rax';
-import View, { custom } from 'rax-view';
+import View from 'rax-view';
 import Image from 'rax-image';
 import img from './assets/rax.png';
 import './component.css';
 
 const a = 0;
-const b = 1;
+const b = 2;
 
 export default function Index() {
-  custom();
   return (
     <View class="my-view">
       Hello World!

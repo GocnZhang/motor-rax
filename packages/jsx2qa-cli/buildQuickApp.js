@@ -8,7 +8,7 @@ const defaultManifestJSON = require('./utils/defaultManifest.json');
 
 function generateQuickAppManifest (options) {
   const quickappJSON = defaultManifestJSON;
-  const { distDirectory } = options;
+  const { distDirectory, workDirectory } = options;
   let router = {};
   let display = {};
   if (fs.existsSync(path.join(distDirectory, '/src/app.json'))) {
@@ -40,6 +40,22 @@ function generateQuickAppManifest (options) {
     quickappJSON.display = display;
 
     fs.writeFileSync(path.join(distDirectory, '/src/manifest.json'), JSON.stringify(quickappJSON, null, 2))
+  }
+
+  // 移除快应用下的app.js / app.config.json / app.json
+  if (fs.existsSync(path.join(distDirectory, '/src/app.js'))) {
+    fs.removeSync(path.join(distDirectory, '/src/app.js'));
+  }
+  if (fs.existsSync(path.join(distDirectory, '/src/app.json'))) {
+    fs.removeSync(path.join(distDirectory, '/src/app.json'));
+  }
+  if (fs.existsSync(path.join(distDirectory, '/src/app.config.js'))) {
+    fs.removeSync(path.join(distDirectory, '/src/app.config.js'));
+  }
+
+  // 如果存在app.ux文件则平移
+  if (fs.existsSync(path.join(workDirectory, '/src/app.ux'))) {
+    fs.copySync(path.join(workDirectory, '/src/app.ux'), path.join(distDirectory, '/src/app.ux'));
   }
 }
 

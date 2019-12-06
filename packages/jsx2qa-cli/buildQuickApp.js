@@ -72,5 +72,7 @@ module.exports = async (options = {}) => {
     console.log(chalk.red('快应用环境准备失败，请重试！'))
     process.exit(0);
     return;
+  } else {
+    console.log('\nWatching file changes...');
   }
 }

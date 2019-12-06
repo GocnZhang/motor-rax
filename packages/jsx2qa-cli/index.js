@@ -38,6 +38,8 @@ function build(options = {}) {
     del.sync(distDirectory + '/**');
   }
 
+  if (!existsSync(distDirectory)) mkdirSync(distDirectory);
+
   copyConstantDir(constantDir, distDirectory);
 
   const needUpdate = checkNeedUpdate(turnOffCheckUpdate);
@@ -88,6 +90,8 @@ function watch(options = {}) {
     turnOffCheckUpdate = false
   } = options;
 
+  if (!existsSync(distDirectory)) mkdirSync(distDirectory);
+
   copyConstantDir(constantDir, distDirectory);
 
   const needUpdate = checkNeedUpdate(turnOffCheckUpdate);
@@ -118,7 +122,6 @@ function watch(options = {}) {
     if (needUpdate) {
       console.log(chalk.black.bgYellow.bold('Update for miniapp related packages available, please reinstall dependencies.'));
     }
-    console.log('\nWatching file changes...');
   });
 }
 

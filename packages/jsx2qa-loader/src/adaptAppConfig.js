@@ -2,7 +2,8 @@ const appConfigMap = {
   window: {
     defaultTitle: {
       ali: 'defaultTitle',
-      wechat: 'navigationBarTitleText'
+      wechat: 'navigationBarTitleText',
+      quickapp: 'titleBarText'
     },
     pullRefresh: {
       ali: 'pullRefresh',

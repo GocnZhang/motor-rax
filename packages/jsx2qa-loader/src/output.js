@@ -1,5 +1,5 @@
 const { writeJSONSync, writeFileSync, existsSync, mkdirpSync } = require('fs-extra');
-const { extname, dirname, join } = require('path');
+const { extname, dirname, join, relative } = require('path');
 const { transformSync } = require('@babel/core');
 const { minify, minifyJS, minifyCSS, minifyXML } = require('./utils/minifyCode');
 const addSourceMap = require('./utils/addSourceMap');
@@ -91,13 +91,16 @@ function output(content, raw, options) {
   if (json) {
     writeFileWithDirCheck(outputPath.json, json, 'json');
   }
+  let uxTxt = '';
   if (template) {
-    writeFileWithDirCheck(outputPath.template, `<template>
-    ${template}
-</template>
-<script>
-    ${code}
-</script>`);
+    uxTxt += `<template>\n${template}\n</template>\n`;
+    if (code) {
+      uxTxt += `<script>\n${code}\n</script>\n`
+    }
+    if (css && outputPath.css) {
+      uxTxt += `<style src="${relative(outputPath.template, outputPath.css)}"></style>\n`
+    }
+    writeFileWithDirCheck(outputPath.template, uxTxt);
   }
   if (css) {
     writeFileWithDirCheck(outputPath.css, css);

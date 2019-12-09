@@ -14,6 +14,9 @@
     "type": "git",
     "url": "git@gitlab.alibaba-inc.com:alijk/jsx2qa-compiler.git"
   },
+  "publishConfig": {
+    "registry": "https://registry.npm.alibaba-inc.com"
+  },
   "keywords": [
     "rax",
     "quickapp"

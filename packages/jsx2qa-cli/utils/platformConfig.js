@@ -7,7 +7,7 @@ module.exports = {
     }
   },
   'quickapp': {
-    type: 'ali',
+    type: 'quickapp',
     extension: {
       xml: '.ux',
       css: '.css',

@@ -1,7 +1,5 @@
 import { createElement } from 'rax';
 import View from 'rax-view';
-import Image from 'rax-image';
-import img from './assets/rax.png';
 import './component.css';
 
 const a = 0;
@@ -11,7 +9,6 @@ export default function Index() {
   return (
     <View class="my-view">
       Hello World!
-      <Image source={{ uri: img }} c={a && b} d={img ? a : b} />
     </View>
   );
 }

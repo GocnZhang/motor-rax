@@ -93,7 +93,7 @@ function output(content, raw, options) {
   }
   let uxTxt = '';
   if (template) {
-    uxTxt += `<template>\n${template}\n</template>\n`;
+    uxTxt += `${template}\n`;
     if (code) {
       uxTxt += `<script>\n${code}\n</script>\n`
     }

@@ -1,6 +1,6 @@
 const { readJSONSync, readFileSync, existsSync, mkdirSync } = require('fs-extra');
 const { join } = require('path');
-const compiler = require('jsx-compiler');
+const compiler = require('jsx2qa-compiler');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const PrettyError = require('pretty-error');

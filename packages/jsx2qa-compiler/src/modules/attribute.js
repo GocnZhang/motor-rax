@@ -22,13 +22,17 @@ function transformAttribute(ast, code, adapter) {
             } else {
               path.parentPath.node.attributes.push(t.jsxAttribute(t.jsxIdentifier('class'), node.value));
             }
-          } else if (isNativeComponent(path)) {
-            node.name.name = 'class';
-          }
+          } else{
+            if (isNativeComponent(path)) {
+              node.name.name = 'class';
+            } else {
+              node.name.name = 'class-name';
+            }
+          } 
           break;
         case 'style':
           if (adapter.styleKeyword && !isNativeComponent(path)) {
-            node.name.name = 'styleSheet';
+            node.name.name = 'style-sheet';
           }
           break;
         case 'ref':

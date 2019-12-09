@@ -328,7 +328,6 @@ function addDefine(ast, type, userDefineType, eventHandlers, useCreateStyle, use
       const localIdentifier = t.identifier(safeCreateInstanceId);
       // Component(__create_component__(__class_def__));
       const args = [t.identifier(EXPORTED_DEF)];
-
       // import { createComponent as __create_component__ } from "/__helpers/component";
       const specifiers = [t.importSpecifier(localIdentifier, t.identifier(importedIdentifier))];
       if ((type === 'page' || type === 'component') && userDefineType === 'class') {
@@ -374,15 +373,10 @@ function addDefine(ast, type, userDefineType, eventHandlers, useCreateStyle, use
       }
 
       path.node.body.push(
-        t.expressionStatement(
+        t.exportDefaultDeclaration(
           t.callExpression(
-            t.identifier(getConstructor(type)),
-            [
-              t.callExpression(
-                t.identifier(safeCreateInstanceId),
-                args
-              )
-            ],
+            t.identifier(safeCreateInstanceId),
+            args
           )
         )
       );

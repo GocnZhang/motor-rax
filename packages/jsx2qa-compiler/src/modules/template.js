@@ -24,6 +24,15 @@ function _transformTemplate(defaultExportedPath, code, options) {
   if (!returnPath) throw new Error('Can not find JSX Statements in ' + options.resourcePath);
 
   let returnArgument = returnPath.get('argument').node;
+  traverse(returnArgument, {
+    JSXText(path) {
+      // <View>hello</View> => <View><text>hello</text></View>
+      const { node, parentPath } = path;
+      if(t.isJSXElement(parentPath) && path.node.value && path.node.value.trim().length && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
+        path.replaceWith(createJSX('text', {}, [path.node]));
+      }
+    }
+  })
   if (!['JSXText', 'JSXExpressionContainer', 'JSXSpreadChild', 'JSXElement', 'JSXFragment'].includes(returnArgument.type)) {
     returnArgument = t.jsxExpressionContainer(returnArgument);
   }
@@ -40,7 +49,7 @@ module.exports = {
   parse(parsed, code, options) {
     const { defaultExportedPath } = parsed;
     if (!defaultExportedPath) return;
-    // <View></View> => <template><View></View></template>
+    // <View>111</View> => <template><View><text>111</text></View></template>
     const result = _transformTemplate(defaultExportedPath, parsed, options)
     Object.assign(parsed, result);
   },

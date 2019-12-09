@@ -10,7 +10,7 @@ const parserAdapters = {
     for: 'for',
     forItem: 'a:for-item',
     forIndex: 'a:for-index',
-    key: 'a:key',
+    key: 'key',
 
     modulePathSuffix: '/lib/miniapp/index',
 

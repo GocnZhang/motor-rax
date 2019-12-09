@@ -7,7 +7,7 @@
     "test": "jest --coverage --testPathIgnorePatterns=__modules__",
     "test:watch": "npm run test -- --watchAll",
     "start": "node ./test/index.js",
-    "jest": "jest ./src/modules/__tests__/template.js",
+    "jest": "jest ./src/modules/__tests__/attribute.js",
     "list": "node ./src/modules/__tests__/list-test.js"
   },
   "repository": {

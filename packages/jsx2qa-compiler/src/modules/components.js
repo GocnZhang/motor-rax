@@ -32,7 +32,8 @@ function transformIdentifierComponentName(path, alias, dynamicValue, parsed, opt
   } = parsed;
   // Miniapp template tag name does not support special characters.
   const componentTag = alias.name.replace(/@|\//g, '_');
-  replaceComponentTagName(path, t.jsxIdentifier(componentTag));
+  const pureComponentTag = componentTag.replace('_ali_', '')
+  replaceComponentTagName(path, t.jsxIdentifier(pureComponentTag));
 
   if (!compiledComponents[componentTag]) {
     const parentJSXListEl = path.findParent(p => p.node.__jsxlist);
@@ -226,6 +227,23 @@ function transformComponents(parsed, options) {
   };
 }
 
+function transformComTemplate(parsed, options, code) {
+  const { ast, templateAST, imported, usingComponents } = parsed;
+  traverse(templateAST, {
+    JSXOpeningElement(path) {
+      const { node, parentPath } = path;
+      if(node.name.name === 'template') {
+        Object.keys(usingComponents).forEach((v) => {
+          parentPath.node.children.unshift(createJSX('import', {
+            src: t.stringLiteral(usingComponents[v]),
+            name: t.stringLiteral(v)
+          }))
+        })
+      }
+    }
+  })
+}
+
 /**
  * Rax components.
  */
@@ -235,13 +253,16 @@ module.exports = {
       parsed.componentDependentProps = {};
     }
     const { contextList, dynamicValue, componentsAlias } = transformComponents(parsed, options, code);
+    console.log('componentsAlias', componentsAlias);
     // Collect used components
     Object.keys(componentsAlias).forEach(componentTag => {
       if (!parsed.usingComponents) {
         parsed.usingComponents = {};
       }
-      parsed.usingComponents[componentTag] = getComponentPath(componentsAlias[componentTag], options);
+      // _ali_motor-rax-image => motor-rax-image
+      parsed.usingComponents[componentTag.replace('_ali_', '')] = getComponentPath(componentsAlias[componentTag], options);
     });
+    transformComTemplate(parsed, options, code)
     // Assign used context
     parsed.contextList = contextList;
     // Collect dynamicValue
@@ -255,7 +276,8 @@ module.exports = {
     ret.usingComponents = parsed.usingComponents;
   },
   // For test case.
-  _transformComponents: transformComponents
+  _transformComponents: transformComponents,
+  _transformComTemplate: transformComTemplate
 };
 
 function getComponentAlias(tagName, imported) {

@@ -19,7 +19,7 @@ function transformRenderFunction(ast, renderFnPath, code) {
           // Handle this.xxxx()
           if (t.isThisExpression(callee.object) && t.isIdentifier(callee.property)) {
             const methodName = callee.property.name;
-            const tempDataName = `${methodName}State__temp${tempId++}`;
+            const tempDataName = `${methodName}StateTemp${tempId++}`;
             const templateName = t.stringLiteral(methodName);
             const renderFunctionPath = renderFnParentPath.get('body').find(path => path.isClassMethod()
               && path.node.key.name === methodName);

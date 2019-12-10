@@ -233,6 +233,7 @@ function transformComponents(parsed, options) {
  */
 module.exports = {
   parse(parsed, code, options) {
+    console.log(111);
     if (!parsed.componentDependentProps) {
       parsed.componentDependentProps = {};
     }

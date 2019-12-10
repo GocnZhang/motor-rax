@@ -1,3 +1,4 @@
+<script>
 export default {
   onCreate() {
     console.info('Application onCreate')
@@ -9,3 +10,4 @@ export default {
     console.log('Application onError')
   }
 }
+</script>

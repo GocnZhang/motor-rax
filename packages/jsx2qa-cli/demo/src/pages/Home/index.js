@@ -6,7 +6,7 @@ import C from './component';
 export default function Home() {
 
   return (
-    <View style={styles.home}>
+    <View>
       <Text>Hello rax quickapp.</Text>
       <C />
     </View>

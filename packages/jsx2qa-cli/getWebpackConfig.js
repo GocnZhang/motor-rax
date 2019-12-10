@@ -7,11 +7,11 @@ const spinner = require('./utils/spinner');
 const moduleResolve = require('./utils/moduleResolve');
 const platformConfig = require('./utils/platformConfig');
 
-const AppLoader = require.resolve('jsx2qa-loader/src/app-loader');
-const PageLoader = require.resolve('jsx2qa-loader/src/page-loader');
-const ComponentLoader = require.resolve('jsx2qa-loader/src/component-loader');
-const ScriptLoader = require.resolve('jsx2qa-loader/src/script-loader');
-const FileLoader = require.resolve('jsx2qa-loader/src/file-loader');
+const AppLoader = require.resolve('@ali/jsx2qa-loader/src/app-loader');
+const PageLoader = require.resolve('@ali/jsx2qa-loader/src/page-loader');
+const ComponentLoader = require.resolve('@ali/jsx2qa-loader/src/component-loader');
+const ScriptLoader = require.resolve('@ali/jsx2qa-loader/src/script-loader');
+const FileLoader = require.resolve('@ali/jsx2qa-loader/src/file-loader');
 
 
 const BabelLoader = require.resolve('babel-loader');

@@ -1,6 +1,6 @@
 {
   "name": "@ali/jsx2qa-loader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "src/app-loader.js",
   "scripts": {
@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@ali/jsx2qa-compiler": "^0.1.0",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-export-default-from": "^7.5.2",

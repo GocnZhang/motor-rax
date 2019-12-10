@@ -1,6 +1,6 @@
 {
-  "name": "jsx2qa-compiler",
-  "version": "0.0.1",
+  "name": "@ali/jsx2qa-compiler",
+  "version": "0.1.0",
   "description": "Transform JSX styled Rax Components into quickapp parts.",
   "main": "src/index.js",
   "scripts": {
@@ -13,6 +13,9 @@
   "repository": {
     "type": "git",
     "url": "git@gitlab.alibaba-inc.com:alijk/jsx2qa-compiler.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npm.alibaba-inc.com"
   },
   "keywords": [
     "rax",

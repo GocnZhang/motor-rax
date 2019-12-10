@@ -11,12 +11,17 @@
     "test:watch": "npm run test -- --watchAll",
     "start": "./bin/jsx2qa.js start --entry ./demo/src/app.js"
   },
+  "publishConfig": {
+    "registry": "https://registry.npm.alibaba-inc.com"
+  },
   "homepage": "https://github.com/alibaba/rax#readme",
   "engine": {
     "node": ">=8"
   },
   "author": "Rax Team",
   "dependencies": {
+    "@ali/jsx2qa-compiler": "^0.1.0",
+    "@ali/jsx2qa-loader": "^0.1.0",
     "@ali/motor-jsx2mp-runtime": "^0.1.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-export-default-from": "^7.5.2",

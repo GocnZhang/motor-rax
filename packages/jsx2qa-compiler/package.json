@@ -7,7 +7,7 @@
     "test": "jest --coverage --testPathIgnorePatterns=__modules__",
     "test:watch": "npm run test -- --watchAll",
     "start": "node ./test/index.js",
-    "jest": "jest ./src/modules/__tests__/attribute.js",
+    "jest": "jest ./src/modules/__tests__/components.js",
     "list": "node ./src/modules/__tests__/list-test.js"
   },
   "repository": {
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@ali/motor-rax-image": "^0.0.1",
+    "@ali/motor-rax-text": "^1.0.6",
     "@babel/code-frame": "^7.0.0",
     "@babel/generator": "^7.3.4",
     "@babel/parser": "^7.3.4",

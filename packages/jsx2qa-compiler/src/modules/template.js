@@ -42,6 +42,23 @@ function _transformTemplate(defaultExportedPath, code, options) {
   result[RENDER_FN_PATH] = renderFnPath;
   return result;
 }
+
+function transformComTemplate(parsed, options, code) {
+  const { ast, templateAST, imported, usingComponents } = parsed;
+  traverse(templateAST, {
+    JSXOpeningElement(path) {
+      const { node, parentPath } = path;
+      if(node.name.name === 'template') {
+        Object.keys(usingComponents || {}).forEach((v) => {
+          parentPath.node.children.unshift(createJSX('import', {
+            src: t.stringLiteral(usingComponents[v]),
+            name: t.stringLiteral(v)
+          }))
+        })
+      }
+    }
+  })
+}
 /**
  * Extract JSXElement path.
  */
@@ -55,6 +72,11 @@ module.exports = {
   },
   generate(ret, parsed, options) {
     if (parsed[TEMPLATE_AST]) {
+      transformComTemplate(parsed, options)
+      ret.template = genExpression(parsed[TEMPLATE_AST], {
+        comments: false,
+        concise: true,
+      })
       const children = parsed[TEMPLATE_AST].children || [];
       const lastTemplateDefineIdx = findIndex(children,
         (node) => t.isJSXElement(node) && node.openingElement.name.name !== 'template');
@@ -71,7 +93,8 @@ module.exports = {
       ].join('\n');
     }
   },
-  _transformTemplate: _transformTemplate
+  _transformTemplate: _transformTemplate,
+  _transformComTemplate: transformComTemplate
 };
 
 /**

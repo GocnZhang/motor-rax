@@ -1,7 +1,7 @@
 const { readJSONSync, writeJSONSync, writeFileSync, readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
 const { getOptions } = require('loader-utils');
-const compiler = require('jsx2qa-compiler');
+const compiler = require('@ali/jsx2qa-compiler');
 const chalk = require('chalk');
 const PrettyError = require('pretty-error');
 const cached = require('./cached');

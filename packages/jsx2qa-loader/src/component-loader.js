@@ -1,6 +1,6 @@
 const { readFileSync, existsSync, mkdirpSync } = require('fs-extra');
 const { relative, join, dirname, resolve } = require('path');
-const compiler = require('jsx2qa-compiler');
+const compiler = require('@ali/jsx2qa-compiler');
 const { getOptions } = require('loader-utils');
 const chalk = require('chalk');
 const PrettyError = require('pretty-error');

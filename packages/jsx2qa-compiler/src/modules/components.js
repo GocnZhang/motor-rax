@@ -15,6 +15,7 @@ const replaceComponentTagName = require('../utils/replaceComponentTagName');
 const RELATIVE_COMPONENTS_REG = /^\..*(\.jsx?)?$/i;
 const PKG_NAME_REG = /^.*\/node_modules\/([^\/]*).*$/;
 let tagCount = 0;
+const TEMPLATE_AST = 'templateAST';
 
 /**
  * Transform the component name is identifier
@@ -227,23 +228,6 @@ function transformComponents(parsed, options) {
   };
 }
 
-function transformComTemplate(parsed, options, code) {
-  const { ast, templateAST, imported, usingComponents } = parsed;
-  traverse(templateAST, {
-    JSXOpeningElement(path) {
-      const { node, parentPath } = path;
-      if(node.name.name === 'template') {
-        Object.keys(usingComponents).forEach((v) => {
-          parentPath.node.children.unshift(createJSX('import', {
-            src: t.stringLiteral(usingComponents[v]),
-            name: t.stringLiteral(v)
-          }))
-        })
-      }
-    }
-  })
-}
-
 /**
  * Rax components.
  */
@@ -253,7 +237,6 @@ module.exports = {
       parsed.componentDependentProps = {};
     }
     const { contextList, dynamicValue, componentsAlias } = transformComponents(parsed, options, code);
-    console.log('componentsAlias', componentsAlias);
     // Collect used components
     Object.keys(componentsAlias).forEach(componentTag => {
       if (!parsed.usingComponents) {
@@ -262,7 +245,6 @@ module.exports = {
       // _ali_motor-rax-image => motor-rax-image
       parsed.usingComponents[componentTag.replace('_ali_', '')] = getComponentPath(componentsAlias[componentTag], options);
     });
-    transformComTemplate(parsed, options, code)
     // Assign used context
     parsed.contextList = contextList;
     // Collect dynamicValue
@@ -276,8 +258,7 @@ module.exports = {
     ret.usingComponents = parsed.usingComponents;
   },
   // For test case.
-  _transformComponents: transformComponents,
-  _transformComTemplate: transformComTemplate
+  _transformComponents: transformComponents
 };
 
 function getComponentAlias(tagName, imported) {
@@ -292,6 +273,7 @@ function getComponentAlias(tagName, imported) {
 }
 
 function getComponentConfig(pkgName, resourcePath) {
+  console.log('resourcePath', resourcePath, pkgName);
   const pkgPath = moduleResolve(resourcePath, join(pkgName, 'package.json'));
   if (!pkgPath) {
     throw new Error(

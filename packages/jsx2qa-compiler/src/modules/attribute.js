@@ -48,20 +48,6 @@ function transformAttribute(ast, code, adapter) {
         default:
           
       }
-      // onChange => bindChange
-      if(attrName.slice(0, 2) === 'on') {
-        node.name.name = attrName.replace('on', 'bind');
-      }
-      // bindChange => bind-change
-      const newAttrName = node.name.name;
-      if (/[A-Z]+/g.test(newAttrName) && newAttrName !== 'className') {
-        node.name.name = newAttrName.replace(/[A-Z]+/g, (v, i) => {
-          if(i !== 0) {
-            return `-${v.toLowerCase()}`
-          }
-          return v; 
-        });
-      }
     }
   });
   return refs;
@@ -74,11 +60,46 @@ function isNativeComponent(path) {
   return !!compiledComponents[tagName];
 }
 
+function transformPreComponentAttr(ast, options) {
+  traverse(ast, {
+    JSXAttribute(path) {
+      const { node, parentPath } = path;
+      const attrName = node.name.name;
+      console.log(parentPath.node.name.name);
+      if(parentPath.node.name.name.indexOf('rax-') !== -1) {
+        // onChange => bindChange
+        if(attrName.slice(0, 2) === 'on') {
+          node.name.name = attrName.replace('on', 'bind');
+        }
+        // bindChange => bind-change
+        const newAttrName = node.name.name;
+        if (/[A-Z]+/g.test(newAttrName) && newAttrName !== 'className') {
+          node.name.name = newAttrName.replace(/[A-Z]+/g, (v, i) => {
+            if(i !== 0) {
+              return `-${v.toLowerCase()}`
+            }
+            return v; 
+          });
+        }
+      }
+    }
+  })
+}
+
 module.exports = {
   parse(parsed, code, options) {
     parsed.refs = transformAttribute(parsed.templateAST, code, options.adapter);
   },
-
+  generate(ret, parsed, options) {
+    if (parsed.templateAST) {
+      transformPreComponentAttr(parsed.templateAST, options.adapter)
+    }
+    ret.template = genExpression(parsed.templateAST, {
+      comments: false,
+      concise: true,
+    })
+  },
   // For test cases.
   _transformAttribute: transformAttribute,
+  _transformPreComponentAttr: transformPreComponentAttr
 };

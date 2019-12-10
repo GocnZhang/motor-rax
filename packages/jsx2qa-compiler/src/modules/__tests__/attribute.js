@@ -1,5 +1,5 @@
 const t = require('@babel/types');
-const { _transformAttribute } = require('../attribute');
+const { _transformAttribute, _transformPreComponentAttr } = require('../attribute');
 const { parseExpression } = require('../../parser');
 const adapter = require('../../adapter').quickapp;
 const genCode = require('../../codegen/genCode');
@@ -39,9 +39,10 @@ describe('Transform JSX Attribute', () => {
 }}>test</Custom>`);
   });
   it('should transform on to bind', () => {
-    const code = "<Custom onInputChange={this.onInputChange}>test</Custom>";
+    const code = "<rax-text onInputChange={this.onInputChange}>test</rax-text>";
     const ast = parseExpression(code);
     _transformAttribute(ast, code, adapter);
-    expect(genCode(ast).code).toEqual(`<Custom bind-input-change={this.onInputChange}>test</Custom>`);
+    _transformPreComponentAttr(ast, adapter)
+    expect(genCode(ast).code).toEqual(`<rax-text bind-input-change={this.onInputChange}>test</rax-text>`);
   });
 });

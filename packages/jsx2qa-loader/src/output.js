@@ -111,7 +111,7 @@ function output(content, raw, options) {
       uxTxt += `<script>\n${code}\n</script>\n`
     }
     if (css && outputPath.css) {
-      uxTxt += `<style src="${relative(outputPath.template, outputPath.css)}"></style>\n`
+      uxTxt += `<style src="./${relative(dirname(outputPath.template), outputPath.css)}"></style>\n`
     }
     writeFileWithDirCheck(outputPath.template, uxTxt);
   }

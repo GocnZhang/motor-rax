@@ -55,7 +55,7 @@ function transformCode(rawContent, mode, externalPlugins = [], externalPreset = 
  */
 function output(content, raw, options) {
   const { mode, outputPath, externalPlugins = [] } = options;
-  let { code, config, json, css, map, template, assets } = content;
+  let { code, config, json, css, map, template, assets, renderItems = [], importComponents = [] } = content;
   if (mode === 'build') {
     // Compile ES6 => ES5 and minify code
     code = minifyJS(transformCode(code,
@@ -88,11 +88,24 @@ function output(content, raw, options) {
   // Write file
   writeFileWithDirCheck(outputPath.code, code);
 
+  // Write ux components
+  if (renderItems && renderItems.length) {
+    const renderItemRoot = outputPath.template.split('/').slice(0, -1).join('/');
+    for (let i in renderItems) {
+      const item = renderItems[i];
+      Object.keys(item).forEach(fileName => {
+        writeFileSync(`${renderItemRoot}/${fileName}.ux`, item[fileName]);
+      });
+    }
+  }
   if (json) {
     writeFileWithDirCheck(outputPath.json, json, 'json');
   }
   let uxTxt = '';
   if (template) {
+    if (importComponents && importComponents.length) {
+      uxTxt += importComponents.join('\n');
+    }
     uxTxt += `${template}\n`;
     if (code) {
       uxTxt += `<script>\n${code}\n</script>\n`

@@ -61,7 +61,6 @@ function transformList(ast, renderItemFunctions, adapter, code) {
               returnElPath.traverse({
                 Identifier(innerPath) {
                   if (innerPath.findParent(p => p.node.__bindEvent)) return;
-                  // console.log('node', innerPath.node.name);
                   if (
                     innerPath.scope.hasBinding(innerPath.node.name)
                     || innerPath.node.name === forItem.name
@@ -134,7 +133,7 @@ function transformList(ast, renderItemFunctions, adapter, code) {
 
 module.exports = {
   parse(parsed, code, options) {
-
+    
     const useCreateStyle = transformList(parsed.templateAST, parsed.renderItemFunctions, options.adapter, code);
     // In list item maybe use __create_style__
     if (!parsed.useCreateStyle) {

@@ -9,4 +9,3 @@ const ast = parseExpression(`
 })}</View>
 `);
 _transformList(ast, [], adapter);
-console.log(genCode(ast).code);

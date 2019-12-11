@@ -233,7 +233,6 @@ function transformComponents(parsed, options) {
  */
 module.exports = {
   parse(parsed, code, options) {
-    console.log(111);
     if (!parsed.componentDependentProps) {
       parsed.componentDependentProps = {};
     }
@@ -274,7 +273,6 @@ function getComponentAlias(tagName, imported) {
 }
 
 function getComponentConfig(pkgName, resourcePath) {
-  console.log('resourcePath', resourcePath, pkgName);
   const pkgPath = moduleResolve(resourcePath, join(pkgName, 'package.json'));
   if (!pkgPath) {
     throw new Error(

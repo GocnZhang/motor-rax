@@ -65,7 +65,6 @@ function transformPreComponentAttr(ast, options) {
     JSXAttribute(path) {
       const { node, parentPath } = path;
       const attrName = node.name.name;
-      console.log(parentPath.node.name.name);
       if(parentPath.node.name.name.indexOf('rax-') !== -1) {
         // onChange => bindChange
         if(attrName.slice(0, 2) === 'on') {

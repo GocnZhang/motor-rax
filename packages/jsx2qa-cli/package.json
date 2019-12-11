@@ -20,7 +20,6 @@
   },
   "author": "Rax Team",
   "dependencies": {
-    "@ali/jsx2qa-compiler": "^0.1.0",
     "@ali/jsx2qa-loader": "^0.1.0",
     "@ali/motor-jsx2mp-runtime": "^0.1.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",

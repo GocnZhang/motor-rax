@@ -38,26 +38,44 @@ function _transformTemplate(defaultExportedPath, code, options) {
   }
   returnPath.remove();
   const result = {};
-  result[TEMPLATE_AST] = createJSX('template', {}, [returnArgument]);
+  result[TEMPLATE_AST] = createJSX('template', { pagePath: t.StringLiteral('true') }, [returnArgument])
   result[RENDER_FN_PATH] = renderFnPath;
   return result;
 }
 
 function transformComTemplate(parsed, options, code) {
   const { ast, templateAST, imported, usingComponents } = parsed;
+  const importComponents = []
   traverse(templateAST, {
-    JSXOpeningElement(path) {
-      const { node, parentPath } = path;
-      if(node.name.name === 'template') {
-        Object.keys(usingComponents || {}).forEach((v) => {
-          parentPath.node.children.unshift(createJSX('import', {
-            src: t.stringLiteral(usingComponents[v]),
-            name: t.stringLiteral(v)
-          }))
-        })
+    JSXElement: {
+      exit(path) {
+        const { node: {
+          openingElement
+        } } = path;
+        if (openingElement) {
+          if (t.isJSXIdentifier(openingElement.name)
+            && openingElement.name.name === 'template'
+            && openingElement.attributes.find(attr => t.isJSXIdentifier(attr.name) && attr.name.name === 'pagePath')
+          ) {
+            Object.keys(usingComponents || {}).forEach((v) => {
+              importComponents.push(genExpression(createJSX('import', {
+                src: t.stringLiteral(usingComponents[v]),
+                name: t.stringLiteral(v)
+              }), {
+                comments: false,
+                concise: true,
+              }))
+            })
+          } else {
+            path.skip();
+          }
+        } else {
+          path.skip();
+        }
       }
     }
   })
+  return importComponents;
 }
 /**
  * Extract JSXElement path.
@@ -72,11 +90,8 @@ module.exports = {
   },
   generate(ret, parsed, options) {
     if (parsed[TEMPLATE_AST]) {
-      transformComTemplate(parsed, options)
-      ret.template = genExpression(parsed[TEMPLATE_AST], {
-        comments: false,
-        concise: true,
-      })
+      const importComponents = transformComTemplate(parsed, options);
+      ret.importComponents = ret.importComponents ? ret.importComponents.concat(importComponents) : importComponents;
       const children = parsed[TEMPLATE_AST].children || [];
       const lastTemplateDefineIdx = findIndex(children,
         (node) => t.isJSXElement(node) && node.openingElement.name.name !== 'template');

@@ -2,17 +2,20 @@ const t = require('@babel/types');
 const traverse = require('../utils/traverseNodePath');
 const getReturnElementPath = require('../utils/getReturnElementPath');
 const createJSX = require('../utils/createJSX');
+const genExpression = require('../codegen/genExpression');
 const createBinding = require('../utils/createBinding');
 
 function transformRenderFunction(ast, renderFnPath, code) {
   const renderItemList = [];
   const renderItemFunctions = [];
+  const importComponents = [];
   let tempId = 0;
   traverse(ast, {
     CallExpression: {
       enter(path) {
         const { node } = path;
         const renderFnParentPath = renderFnPath.parentPath;
+        const returnProperties = [];
         // Class component
         if (renderFnParentPath.isClassBody()) {
           const callee = node.callee;
@@ -30,7 +33,6 @@ function transformRenderFunction(ast, renderFnPath, code) {
                 path.skip();
                 return;
               }
-              const returnProperties = [];
               // Collect identifier in return Element
               returnStatementPath.traverse({
                 Identifier(innerPath) {
@@ -46,9 +48,21 @@ function transformRenderFunction(ast, renderFnPath, code) {
                   }
                 }
               });
-              renderItemList.push(createJSX('template', {
-                name: templateName
-              }, [returnArgumentPath.node]));
+              // collect import tagName
+              importComponents.push(genExpression(createJSX('import', {
+                name: templateName,
+                src: t.stringLiteral(`./templates/${methodName}.ux`)
+              }, []), {
+                comments: false,
+                concise: true,
+              }))
+              // collect template tagName
+              const renderItem = {};
+              renderItem[ methodName ] = genExpression(createJSX('template', {}, [returnArgumentPath.node]), {
+                comments: false,
+                concise: true,
+              })
+              renderItemList.push(renderItem)
               // Return used variables
               returnArgumentPath.replaceWith(t.objectExpression(returnProperties));
             }
@@ -58,44 +72,31 @@ function transformRenderFunction(ast, renderFnPath, code) {
               originName: methodName,
               node,
             });
+            const targetAttr = {};
+            returnProperties.forEach((v) => {
+              targetAttr[v.key.name] = t.stringLiteral(createBinding(`${tempDataName}.${v.value.name}`))
+            })
             const targetPath = path.parentPath.isJSXExpressionContainer() ? path.parentPath : path;
-            targetPath.replaceWith(createJSX('template', {
-              is: templateName,
-              data: t.stringLiteral(createBinding(`...${tempDataName}`))
-            }), []);
+            targetPath.replaceWith(createJSX(methodName, targetAttr), []);
           }
-        }
-      }
-    },
-    JSXElement: {
-      exit(path) {
-        const { node: {
-          openingElement
-        } } = path;
-        if (openingElement) {
-          if (t.isJSXIdentifier(openingElement.name)
-            && openingElement.name.name === 'block'
-            && openingElement.attributes.find(attr => t.isStringLiteral(attr.value) && attr.value.value === '{{$ready}}')
-          ) {
-            // Insert template define
-            path.node.children = [...renderItemList, ...path.node.children];
-          } else {
-            path.skip();
-          }
-        } else {
-          path.skip();
         }
       }
     }
   });
-  return renderItemFunctions;
+  return { renderItemFunctions, renderItemList, importComponents };
 }
 
 module.exports = {
   parse(parsed, code, options) {
-    parsed.renderItemFunctions = transformRenderFunction(parsed.templateAST, parsed.renderFunctionPath, code);
+    const { renderItemFunctions, renderItemList, importComponents } = transformRenderFunction(parsed.templateAST, parsed.renderFunctionPath, code);
+    parsed.renderItemFunctions = renderItemFunctions;
+    parsed.renderItems = renderItemList;
+    parsed.importComponents = importComponents;
   },
-
+  generate(ret, parsed, options) {
+    ret.renderItems = parsed.renderItems
+    ret.importComponents = parsed.importComponents
+  },
   // For test cases.
   _transformRenderFunction: transformRenderFunction,
 };

@@ -154,112 +154,113 @@ function transformDirectiveList(ast, code, adapter) {
     JSXAttribute(path) {
       const { node } = path;
       if (t.isJSXIdentifier(node.name, { name: 'x-for' })) {
+        node.name.name = 'for'
         // Check stynax.
-        if (!t.isJSXExpressionContainer(node.value)) {
-          throw new CodeError(code, node, node.loc, 'Invalid x-for usage');
-        }
-        const { expression } = node.value;
-        let params = [];
-        let iterValue;
+        // if (!t.isJSXExpressionContainer(node.value)) {
+        //   throw new CodeError(code, node, node.loc, 'Invalid x-for usage');
+        // }
+        // const { expression } = node.value;
+        // let params = [];
+        // let iterValue;
 
-        if (t.isBinaryExpression(expression, { operator: 'in' })) {
-          // x-for={(item, index) in value}
-          const { left, right } = expression;
-          iterValue = right;
-          if (t.isSequenceExpression(left)) {
-            // x-for={(item, key) in value}
-            params = left.expressions;
-          } else if (t.isIdentifier(left)) {
-            // x-for={item in value}
-            params = [left, t.identifier('index')];
-          } else {
-            // x-for={??? in value}
-            throw new Error('Stynax error of x-for.');
-          }
-        } else {
-          // x-for={value}, x-for={callExp()}, ...
-          iterValue = expression;
-          params = [t.identifier('item'), t.identifier('index')];
-        }
-        const parentJSXEl = path.findParent(p => p.isJSXElement());
-        // Transform x-for iterValue to map function
-        const properties = [
-          t.objectProperty(params[0], params[0]),
-          t.objectProperty(params[1], params[1])
-        ];
-        const loopFnBody = t.blockStatement([
-          t.returnStatement(
-            t.objectExpression(properties)
-          )
-        ]);
-        const mapCallExpression = t.callExpression(
-          t.memberExpression(iterValue, t.identifier('map')),
-          [
-            t.arrowFunctionExpression(params, loopFnBody)
-          ]);
-        const listItem = getListItem(iterValue);
-        if (listItem) {
-          const parentList = listItem.__listItem.parentList;
-          if (parentList) {
-            /**
-             * Assign an new object to item
-             * item: { ...item, info: item.info.map(i => {})
-             * */
-            const loopFnBodyLength = parentList.loopFnBody.body.length;
-            const properties = parentList.loopFnBody.body[loopFnBodyLength - 1].argument.properties;
-            const forItem = properties.find(({key}) => key.name === listItem.name);
-            if (t.isIdentifier(iterValue)) {
-              forItem.value = mapCallExpression;
-            }
-            if (t.isMemberExpression(iterValue)) {
-              switch (forItem.value.type) {
-                case 'Identifier':
-                  if (t.isIdentifier(iterValue.object)) {
-                    forItem.value = t.objectExpression([
-                      t.spreadElement(forItem.value),
-                      t.objectProperty(iterValue.property, mapCallExpression)
-                    ]);
-                  } else {
-                    throw new CodeError(code, iterValue, iterValue.loc, "Currently doesn't support x-for={it in item.info.list} in nested list");
-                  }
-                  break;
-                case 'ObjectExpression':
-                  forItem.value.properties.push(
-                    t.objectProperty(iterValue.property, mapCallExpression)
-                  );
-                  break;
-              }
-            }
-          } else {
-            throw new CodeError(code, iterValue, iterValue.loc, 'Nested x-for list only supports MemberExpression and Identifier，like x-for={item.list} or x-for={item}.');
-          }
-        } else {
-          iterValue = mapCallExpression;
-        }
-        const parentAttributes = path.parentPath.node.attributes;
-        const keyAttrIndex = findIndex(parentAttributes, attr => t.isJSXIdentifier(attr.name, {
-          name: 'key'
-        }));
-        const listAttr = {};
-        if (keyAttrIndex > -1) {
-          listAttr.key = parentAttributes[keyAttrIndex].value;
-          path.parentPath.node.attributes = [
-            ...parentAttributes.slice(0, keyAttrIndex),
-            ...parentAttributes.slice(keyAttrIndex + 1)
-          ];
-        }
-        const listEl = createJSX('block', listAttr, [
-          parentJSXEl.node
-        ]);
-        listEl.__jsxlist = {
-          args: params,
-          iterValue,
-          loopFnBody,
-          jsxplus: true
-        };
-        parentJSXEl.replaceWith(listEl);
-        transformListJSXElement(parentJSXEl, adapter);
-        path.remove();
+        // if (t.isBinaryExpression(expression, { operator: 'in' })) {
+        //   // x-for={(item, index) in value}
+        //   const { left, right } = expression;
+        //   iterValue = right;
+        //   if (t.isSequenceExpression(left)) {
+        //     // x-for={(item, key) in value}
+        //     params = left.expressions;
+        //   } else if (t.isIdentifier(left)) {
+        //     // x-for={item in value}
+        //     params = [left, t.identifier('index')];
+        //   } else {
+        //     // x-for={??? in value}
+        //     throw new Error('Stynax error of x-for.');
+        //   }
+        // } else {
+        //   // x-for={value}, x-for={callExp()}, ...
+        //   iterValue = expression;
+        //   params = [t.identifier('item'), t.identifier('index')];
+        // }
+        // const parentJSXEl = path.findParent(p => p.isJSXElement());
+        // // Transform x-for iterValue to map function
+        // const properties = [
+        //   t.objectProperty(params[0], params[0]),
+        //   t.objectProperty(params[1], params[1])
+        // ];
+        // const loopFnBody = t.blockStatement([
+        //   t.returnStatement(
+        //     t.objectExpression(properties)
+        //   )
+        // ]);
+        // const mapCallExpression = t.callExpression(
+        //   t.memberExpression(iterValue, t.identifier('map')),
+        //   [
+        //     t.arrowFunctionExpression(params, loopFnBody)
+        //   ]);
+        // const listItem = getListItem(iterValue);
+        // if (listItem) {
+        //   const parentList = listItem.__listItem.parentList;
+        //   if (parentList) {
+        //     /**
+        //      * Assign an new object to item
+        //      * item: { ...item, info: item.info.map(i => {})
+        //      * */
+        //     const loopFnBodyLength = parentList.loopFnBody.body.length;
+        //     const properties = parentList.loopFnBody.body[loopFnBodyLength - 1].argument.properties;
+        //     const forItem = properties.find(({key}) => key.name === listItem.name);
+        //     if (t.isIdentifier(iterValue)) {
+        //       forItem.value = mapCallExpression;
+        //     }
+        //     if (t.isMemberExpression(iterValue)) {
+        //       switch (forItem.value.type) {
+        //         case 'Identifier':
+        //           if (t.isIdentifier(iterValue.object)) {
+        //             forItem.value = t.objectExpression([
+        //               t.spreadElement(forItem.value),
+        //               t.objectProperty(iterValue.property, mapCallExpression)
+        //             ]);
+        //           } else {
+        //             throw new CodeError(code, iterValue, iterValue.loc, "Currently doesn't support x-for={it in item.info.list} in nested list");
+        //           }
+        //           break;
+        //         case 'ObjectExpression':
+        //           forItem.value.properties.push(
+        //             t.objectProperty(iterValue.property, mapCallExpression)
+        //           );
+        //           break;
+        //       }
+        //     }
+        //   } else {
+        //     throw new CodeError(code, iterValue, iterValue.loc, 'Nested x-for list only supports MemberExpression and Identifier，like x-for={item.list} or x-for={item}.');
+        //   }
+        // } else {
+        //   iterValue = mapCallExpression;
+        // }
+        // const parentAttributes = path.parentPath.node.attributes;
+        // const keyAttrIndex = findIndex(parentAttributes, attr => t.isJSXIdentifier(attr.name, {
+        //   name: 'key'
+        // }));
+        // const listAttr = {};
+        // if (keyAttrIndex > -1) {
+        //   listAttr.key = parentAttributes[keyAttrIndex].value;
+        //   path.parentPath.node.attributes = [
+        //     ...parentAttributes.slice(0, keyAttrIndex),
+        //     ...parentAttributes.slice(keyAttrIndex + 1)
+        //   ];
+        // }
+        // const listEl = createJSX('block', listAttr, [
+        //   parentJSXEl.node
+        // ]);
+        // listEl.__jsxlist = {
+        //   args: params,
+        //   iterValue,
+        //   loopFnBody,
+        //   jsxplus: true
+        // };
+        // parentJSXEl.replaceWith(listEl);
+        // transformListJSXElement(parentJSXEl, adapter);
+        // path.remove();
       }
     }
   });

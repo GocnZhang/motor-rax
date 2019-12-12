@@ -104,14 +104,14 @@ function output(content, raw, options) {
   let uxTxt = '';
   if (template) {
     if (importComponents && importComponents.length) {
-      uxTxt += importComponents.join('\n');
+      uxTxt += importComponents.join('\n') + '\n';
     }
     uxTxt += `${template}\n`;
     if (code) {
       uxTxt += `<script>\n${code}\n</script>\n`
     }
     if (css && outputPath.css) {
-      uxTxt += `<style src="${relative(outputPath.template, outputPath.css)}"></style>\n`
+      uxTxt += `<style src="./${relative(dirname(outputPath.template), outputPath.css)}"></style>\n`
     }
     writeFileWithDirCheck(outputPath.template, uxTxt);
   }

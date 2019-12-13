@@ -88,7 +88,9 @@ module.exports = async function componentLoader(content) {
     css: transformed.style || '',
     json: config,
     template: transformed.template,
-    assets: transformed.assets
+    assets: transformed.assets,
+    importComponents: transformed.importComponents,
+    renderItems: transformed.renderItems,
   };
   const outputOption = {
     outputPath: {

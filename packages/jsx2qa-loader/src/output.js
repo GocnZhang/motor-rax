@@ -104,7 +104,7 @@ function output(content, raw, options) {
   let uxTxt = '';
   if (template) {
     if (importComponents && importComponents.length) {
-      uxTxt += importComponents.join('\n');
+      uxTxt += importComponents.join('\n') + '\n';
     }
     uxTxt += `${template}\n`;
     if (code) {

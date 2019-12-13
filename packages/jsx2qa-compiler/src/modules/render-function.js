@@ -5,7 +5,7 @@ const createJSX = require('../utils/createJSX');
 const genExpression = require('../codegen/genExpression');
 const createBinding = require('../utils/createBinding');
 
-function transformRenderFunction(ast, renderFnPath, code) {
+function transformRenderFunction(ast, renderFnPath, code, options) {
   const renderItemList = [];
   const renderItemFunctions = [];
   const importComponents = [];
@@ -51,7 +51,7 @@ function transformRenderFunction(ast, renderFnPath, code) {
               // collect import tagName
               importComponents.push(genExpression(createJSX('import', {
                 name: templateName,
-                src: t.stringLiteral(`./templates/${methodName}.ux`)
+                src: t.stringLiteral(`./templates/${methodName}.${options.adapter.ext}`)
               }, []), {
                 comments: false,
                 concise: true,
@@ -88,7 +88,7 @@ function transformRenderFunction(ast, renderFnPath, code) {
 
 module.exports = {
   parse(parsed, code, options) {
-    const { renderItemFunctions, renderItemList, importComponents } = transformRenderFunction(parsed.templateAST, parsed.renderFunctionPath, code);
+    const { renderItemFunctions, renderItemList, importComponents } = transformRenderFunction(parsed.templateAST, parsed.renderFunctionPath, code, options);
     parsed.renderItemFunctions = renderItemFunctions;
     parsed.renderItems = renderItemList;
     parsed.importComponents = importComponents;

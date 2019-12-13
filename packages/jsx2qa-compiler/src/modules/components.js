@@ -1,4 +1,4 @@
-const { join, relative, dirname, resolve } = require('path');
+const { join, relative, dirname, resolve, extname } = require('path');
 const { readJSONSync } = require('fs-extra');
 const resolveModule = require('resolve');
 const t = require('@babel/types');
@@ -228,6 +228,11 @@ function transformComponents(parsed, options) {
   };
 }
 
+function removeExt(path) {
+  const ext = extname(path);
+  return path.slice(0, path.length - ext.length);
+}
+
 /**
  * Rax components.
  */
@@ -243,7 +248,15 @@ module.exports = {
         parsed.usingComponents = {};
       }
       // _ali_motor-rax-image => motor-rax-image
-      parsed.usingComponents[componentTag.replace('_ali_', '')] = getComponentPath(componentsAlias[componentTag], options);
+      const key = componentTag.replace('_ali_', '');
+      const path = getComponentPath(componentsAlias[componentTag], options);
+      if (/^c-/.test(key)) {
+        let result = './' + relative(dirname(options.resourcePath), path); // components/Repo.jsx
+        result = `${removeExt(result)}.${options.adapter.ext}`
+        parsed.usingComponents[key] = result;
+      } else {
+        parsed.usingComponents[key] = path;
+      }
     });
     // Assign used context
     parsed.contextList = contextList;
@@ -294,7 +307,6 @@ function getComponentPath(alias, options) {
     if (!options.resourcePath) {
       throw new Error('`resourcePath` must be passed to calc dependency path.');
     }
-
     const filename =
       moduleResolve(options.resourcePath, alias.from, '.jsx') ||
       moduleResolve(options.resourcePath, alias.from, '.js');
@@ -309,17 +321,17 @@ function getComponentPath(alias, options) {
     if (options.platform.type !== 'quickapp') {
       mainName += `:${options.platform.type}`;
     }
-    if (pkg.miniappConfig && pkg.miniappConfig[mainName]) {
+    if (pkg.quickappConfig && pkg.quickappConfig[mainName]) {
       if (disableCopyNpm) {
-        return join(pkg.name, pkg.miniappConfig[mainName]);
+        return join(pkg.name, pkg.quickappConfig[mainName]);
       }
 
       const targetFileDir = dirname(join(options.outputPath, relative(options.sourcePath, options.resourcePath)));
       let npmRelativePath = relative(targetFileDir, join(options.outputPath, '/npm'));
       npmRelativePath = npmRelativePath[0] !== '.' ? './' + npmRelativePath : npmRelativePath;
 
-      const miniappConfigRelativePath = relative(pkg.main, pkg.miniappConfig[mainName]);
-      const realMiniappAbsPath = resolve(realNpmFile, miniappConfigRelativePath);
+      const quickappConfigRelativePath = relative(pkg.main, pkg.quickappConfig[mainName]);
+      const realMiniappAbsPath = resolve(realNpmFile, quickappConfigRelativePath);
       const realMiniappRelativePath = realMiniappAbsPath.slice(realMiniappAbsPath.indexOf(pkgName) + pkgName.length);
       return './' + join(npmRelativePath, pkgName.replace(/@/g, '_'), realMiniappRelativePath);
     } else {

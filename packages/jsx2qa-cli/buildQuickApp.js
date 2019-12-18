@@ -69,7 +69,9 @@ async function prepareQuickAppEnvironment (workDirectory, distDirectory) {
   }
   if (needDownload) {
     spinner.start('开始下载快应用运行容器...');
-    await downloadGithubRepoLatestRelease('alijk-fe/quickapp-container', workDirectory, distDirectory);
+    if (!fs.exists(path.join(distDirectory, 'download_temp.zip'))) {
+      await downloadGithubRepoLatestRelease('alijk-fe/quickapp-container', workDirectory, distDirectory);
+    }
     await unzip(path.join(distDirectory, 'download_temp.zip'));
     spinner.succeed('快应用运行容器下载完成');
   } else {

@@ -1,4 +1,7 @@
 /* global wx */
+import {
+  COMPONENT_DID_MOUNT,
+} from '../cycles';
 
 export function redirectTo(options) {
   wx.redirectTo(options);
@@ -71,5 +74,46 @@ export function attachEvent(isPage, config, proxiedMethods) {
 }
 
 export function updateData(data) {
-  this._internal.setData(data);
+  const setDataTask = [];
+  let $ready = false;
+  // In alibaba miniapp can use $spliceData optimize long list
+  if (this._internal.$spliceData) {
+    const useSpliceData = {};
+    const useSetData = {};
+    for (let key in data) {
+      if (Array.isArray(data[key]) && diffArray(this.state[key], data[key])) {
+        useSpliceData[key] = [this.state[key].length, 0].concat(data[key].slice(this.state[key].length));
+      } else {
+        if (diffData(this.state[key], data[key])) {
+          useSetData[key] = data[key];
+        }
+      }
+    }
+    if (!isEmptyObj(useSetData)) {
+      $ready = useSetData.$ready;
+      setDataTask.push(new Promise(resolve => {
+        this._internal.setData(useSetData, resolve);
+      }));
+    }
+    if (!isEmptyObj(useSpliceData)) {
+      setDataTask.push(new Promise(resolve => {
+        this._internal.$spliceData(useSpliceData, resolve);
+      }));
+    }
+  } else {
+    setDataTask.push(new Promise(resolve => {
+      $ready = data.$ready;
+      this._internal.setData(data, resolve);
+    }));
+  }
+  Promise.all(setDataTask).then(() => {
+    if ($ready) {
+      // trigger did mount
+      this._trigger(COMPONENT_DID_MOUNT);
+    }
+    let callback;
+    while (callback = this._pendingCallbacks.pop()) {
+      callback();
+    }
+  });
 }

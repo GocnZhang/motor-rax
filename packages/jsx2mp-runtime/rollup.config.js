@@ -32,7 +32,7 @@ function getDataIdentifierName(platform) {
 function getTagIdIdentifierName(platform) {
   switch (platform) {
     case 'quickapp':
-      return 'tagid';
+      return 'tag-id';
 
     default:
       return '__tagId';
@@ -42,7 +42,7 @@ function getTagIdIdentifierName(platform) {
 function getParentIdIdentifierName(platform) {
   switch (platform) {
     case 'quickapp':
-      return 'parentid';
+      return 'parent-id';
 
     default:
       return '__parentId';

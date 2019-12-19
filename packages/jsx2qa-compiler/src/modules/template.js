@@ -35,7 +35,7 @@ function _transformTemplate(defaultExportedPath, code, options) {
     },
     JSXExpressionContainer(path) {
       const { node, parentPath } = path;
-      if(t.isJSXExpressionContainer(path) && (t.isIdentifier(node.expression) || t.isMemberExpression(node.expression)) && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
+      if(t.isJSXElement(parentPath) && t.isJSXExpressionContainer(path) && (t.isIdentifier(node.expression) || t.isMemberExpression(node.expression)) && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
         path.replaceWith(createJSX('text', {}, [path.node]));
       }
     }

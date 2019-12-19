@@ -1,4 +1,4 @@
-const { join, relative, dirname, resolve, extname } = require('path');
+const { join, dirname, resolve, relative } = require('path');
 const { readJSONSync } = require('fs-extra');
 const resolveModule = require('resolve');
 const t = require('@babel/types');
@@ -35,7 +35,7 @@ function transformIdentifierComponentName(path, alias, dynamicValue, parsed, opt
   const componentTag = alias.name.replace(/@|\//g, '_');
   const pureComponentTag = componentTag.replace('_ali_', '')
   replaceComponentTagName(path, t.jsxIdentifier(pureComponentTag));
-
+  
   if (!compiledComponents[componentTag]) {
     const parentJSXListEl = path.findParent(p => p.node.__jsxlist);
     // <tag __tagId="tagId" />
@@ -71,6 +71,12 @@ function transformIdentifierComponentName(path, alias, dynamicValue, parsed, opt
     node.attributes.push(
       t.jsxAttribute(t.jsxIdentifier('tag-id'), t.stringLiteral(tagId)),
     );
+
+    // 强制取消自闭合标签
+    node.selfClosing = false;
+    if(!parentPath.closingElement) {
+      parentPath.node.closingElement = t.jsxClosingElement(t.jsxIdentifier(node.name.name));
+    }
 
     /**
      * Handle with special attrs.
@@ -228,11 +234,6 @@ function transformComponents(parsed, options) {
   };
 }
 
-function removeExt(path) {
-  const ext = extname(path);
-  return path.slice(0, path.length - ext.length);
-}
-
 /**
  * Rax components.
  */
@@ -250,13 +251,7 @@ module.exports = {
       // _ali_motor-rax-image => motor-rax-image
       const key = componentTag.replace('_ali_', '');
       const path = getComponentPath(componentsAlias[componentTag], options);
-      if (/^c-/.test(key)) {
-        let result = './' + relative(dirname(options.resourcePath), path); // components/Repo.jsx
-        result = `${removeExt(result)}.${options.adapter.ext}`
-        parsed.usingComponents[key] = result;
-      } else {
-        parsed.usingComponents[key] = path;
-      }
+      parsed.usingComponents[key] = path;
     });
     // Assign used context
     parsed.contextList = contextList;

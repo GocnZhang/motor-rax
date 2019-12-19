@@ -1,4 +1,5 @@
 const t = require('@babel/types');
+const { relative, extname, dirname } = require('path');
 const { NodePath } = require('@babel/traverse');
 const isFunctionComponent = require('../utils/isFunctionComponent');
 const isClassComponent = require('../utils/isClassComponent');
@@ -43,6 +44,11 @@ function _transformTemplate(defaultExportedPath, code, options) {
   return result;
 }
 
+function removeExt(path) {
+  const ext = extname(path);
+  return path.slice(0, path.length - ext.length);
+}
+
 function transformComTemplate(parsed, options, code) {
   const { ast, templateAST, imported, usingComponents } = parsed;
   const importComponents = []
@@ -58,8 +64,13 @@ function transformComTemplate(parsed, options, code) {
             && openingElement.attributes.find(attr => t.isJSXIdentifier(attr.name) && attr.name.name === 'pagePath')
           ) {
             Object.keys(usingComponents || {}).forEach((v) => {
+              let src = usingComponents[v];
+              if (/^c-/.test(v)) {
+                let result = './' + relative(dirname(options.resourcePath), src); // components/Repo.jsx
+                src = `${removeExt(result)}.${options.adapter.ext}`
+              }
               importComponents.push(genExpression(createJSX('import', {
-                src: t.stringLiteral(usingComponents[v]),
+                src: t.stringLiteral(src),
                 name: t.stringLiteral(v)
               }), {
                 comments: false,

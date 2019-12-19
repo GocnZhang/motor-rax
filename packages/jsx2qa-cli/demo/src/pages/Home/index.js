@@ -1,6 +1,6 @@
 import { Component } from 'rax';
 import View from 'rax-view';
-import Text from 'rax-text';
+import Text from '@ali/motor-rax-text';
 import C from './component';
 
 export default function Home() {

@@ -35,8 +35,8 @@ function transformTemplate(
   adapter,
   sourceCode,
 ) {
-  const dynamicValues = new DynamicBinding('_d');
-  const dynamicEvents = new DynamicBinding('_e');
+  const dynamicValues = new DynamicBinding('d');
+  const dynamicEvents = new DynamicBinding('e');
   function handleJSXExpressionContainer(path) {
     const { parentPath, node } = path;
     if (node.__transformed) return;

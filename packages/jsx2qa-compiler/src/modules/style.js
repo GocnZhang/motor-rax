@@ -13,7 +13,7 @@ const getListItem = require('../utils/getListItem');
  *          return { _style0 };
  */
 function transformStyle(ast) {
-  const dynamicValue = new DynamicBinding('_s');
+  const dynamicValue = new DynamicBinding('s');
 
   traverse(ast, {
     JSXAttribute(path) {

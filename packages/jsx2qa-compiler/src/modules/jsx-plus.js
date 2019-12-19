@@ -310,7 +310,7 @@ function transformSlotDirective(ast, adapter) {
 function transformListJSXElement(path, adapter) {
   const { node } = path;
   const { attributes } = node.openingElement;
-  const dynamicFilter = new DynamicBinding('_f');
+  const dynamicFilter = new DynamicBinding('f');
   const filters = [];
   if (node.__jsxlist && !node.__jsxlist.generated) {
     const { args, iterValue } = node.__jsxlist;

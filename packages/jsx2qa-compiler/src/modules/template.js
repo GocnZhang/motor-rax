@@ -32,6 +32,12 @@ function _transformTemplate(defaultExportedPath, code, options) {
       if(t.isJSXElement(parentPath) && path.node.value && path.node.value.trim().length && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
         path.replaceWith(createJSX('text', {}, [path.node]));
       }
+    },
+    JSXExpressionContainer(path) {
+      const { node, parentPath } = path;
+      if(t.isJSXExpressionContainer(path) && (t.isIdentifier(node.expression) || t.isMemberExpression(node.expression)) && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
+        path.replaceWith(createJSX('text', {}, [path.node]));
+      }
     }
   })
   if (!['JSXText', 'JSXExpressionContainer', 'JSXSpreadChild', 'JSXElement', 'JSXFragment'].includes(returnArgument.type)) {

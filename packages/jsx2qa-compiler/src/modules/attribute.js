@@ -31,8 +31,12 @@ function transformAttribute(ast, code, adapter) {
           } 
           break;
         case 'style':
-          if (adapter.styleKeyword && !isNativeComponent(path)) {
-            node.name.name = 'style-sheet';
+          if (adapter.styleKeyword) {
+            if(isNativeComponent(path)) {
+              node.name.name = 'style-sheet';
+            } else {
+              node.name.name = 'styleSheet';
+            }
           }
           break;
         case 'ref':

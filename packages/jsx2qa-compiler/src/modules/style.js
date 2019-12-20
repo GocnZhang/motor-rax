@@ -19,8 +19,10 @@ function transformStyle(ast) {
     JSXAttribute(path) {
       const { node } = path;
       if (shouldReplace(path)) {
-        const styleObjectExpression = node.value.expression;
-
+        let styleObjectExpression = node.value.expression;
+        if (t.isMemberExpression(styleObjectExpression) && styleObjectExpression.property.name === 'style'){
+          styleObjectExpression.property.name = 'styleSheet'
+        }
         // <tag style="{{ _s0 }}" />
         const name = dynamicValue.add({
           expression: t.callExpression(t.identifier('__create_style__'), [styleObjectExpression]),

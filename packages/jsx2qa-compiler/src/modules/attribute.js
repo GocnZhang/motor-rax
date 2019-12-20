@@ -9,7 +9,7 @@ function transformAttribute(ast, code, adapter) {
   const refs = [];
   traverse(ast, {
     JSXAttribute(path) {
-      const { node } = path;
+      const { node, parentPath } = path;
       const attrName = node.name.name;
       switch (attrName) {
         case 'key':
@@ -31,12 +31,8 @@ function transformAttribute(ast, code, adapter) {
           } 
           break;
         case 'style':
-          if (adapter.styleKeyword) {
-            if(isNativeComponent(path)) {
-              node.name.name = 'style-sheet';
-            } else {
-              node.name.name = 'styleSheet';
-            }
+          if (adapter.styleKeyword && /[A-Z]+/g.test(parentPath.node.name.name) || /c-/g.test(parentPath.node.name.name)) {
+            node.name.name = 'style-sheet';
           }
           break;
         case 'ref':
@@ -69,7 +65,7 @@ function transformPreComponentAttr(ast, options) {
     JSXAttribute(path) {
       const { node, parentPath } = path;
       const attrName = node.name.name;
-      if(parentPath.node.name.name.indexOf('rax-') !== -1) {
+      if(parentPath.node.name.name.indexOf('rax-') !== -1 || parentPath.node.name.name.indexOf('c-') !== -1) {
         // onChange => bindChange
         if(attrName.slice(0, 2) === 'on') {
           node.name.name = attrName.replace('on', 'bind');

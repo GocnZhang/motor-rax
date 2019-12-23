@@ -7,14 +7,15 @@ const a = 0;
 const b = 2;
 
 export default class Index extends Component {
-  handleClick() {
-
+  handleClick = () => {
+    this.props.countClick && this.props.countClick();
+    this.props.onCountClick && this.props.onCountClick();
   }
   render() {
     console.log(this.props.title, this.props);
     return (
       <View class="my-view">
-        <text class="my-content" onclick={this.props.countClick} style={this.props.style}>这是一个测试组件</text>
+        <text class="my-content" onclick={this.handleClick} style={this.props.style}>这是一个测试组件，点我</text>
       </View>
     );
   }

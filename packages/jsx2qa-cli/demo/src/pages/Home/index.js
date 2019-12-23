@@ -2,6 +2,7 @@ import { Component, render } from 'rax';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
 import C from './component';
+import D from './functionalComponent';
 import './index.css';
 
 export default class Home extends Component {
@@ -28,11 +29,19 @@ export default class Home extends Component {
           <View><Text class="demo-title">属性传递</Text></View>
           <View><text class="demo-subtitle">1.属性传递(基础，对象，方法，自定义组件)</text></View>
           <C title="属性传递(基础，对象，方法，自定义组件)" countClick={this.onCountClick} obj={{a: 1}} str="string" num={111} boolean={false} array={[1,2,3]} null={null} />
-          <View><text class="demo-subtitle">1.预设组件(属性命名)</text></View>
-          <View><Text class="demo-title" style="color:red" numberOfLines>样式测试</Text></View>
+          <View><text class="demo-subtitle">2.onXxxx属性方法传递</text></View>
+          <C title="onXxxx属性方法传递" onCountClick={this.onCountClick} />
+          <View><text class="demo-subtitle">3.预设组件(属性命名)</text></View>
+          <View><Text class="demo-title" style="color:red;" numberOfLines>样式测试</Text></View>
         </View>
-          
-        
+        <View class="demo-block">
+          <View><Text class="demo-title">functional组件</Text></View>
+          <View><text class="demo-subtitle">1.属性传递(基础，对象，方法，自定义组件)</text></View>
+          <D title="属性传递(基础，对象，方法，自定义组件)" countClick={this.onCountClick} obj={{a: 1}} str="string" num={111} boolean={false} array={[1,2,3]} null={null} />
+          <View><text class="demo-subtitle">2.onXxxx属性方法传递</text></View>
+          <D title="onXxxx属性方法传递" onCountClick={this.onCountClick} />
+        </View>
+
         <span onclick={this.onCountClick}>xxxxxxx点我</span>
         {count}
         {/* {count}

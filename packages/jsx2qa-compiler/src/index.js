@@ -14,7 +14,6 @@ function compile(template, options) {
   const generated = generate(parsed, options);
   const { ast, imported, exported } = parsed;
   const result = Object.assign({ ast, imported, exported }, generated);
-  console.log('result', result);
   return result
 }
 

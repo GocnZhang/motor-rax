@@ -1,0 +1,17 @@
+.demo-wrap{
+  align-items: flex-start;
+  flex-direction: column;
+}
+.demo-block{
+  flex-direction: column;
+}
+.demo-title{
+  font-size: 48rpx;
+  font-weight: 700;
+  margin-bottom: 30rpx;
+}
+.demo-subtitle{
+  margin-left: 24rpx;
+  font-size: 36rpx;
+  margin-bottom: 12rpx;
+}

@@ -16,7 +16,7 @@ module.exports = [
   // Handle template style attr
   require('./style'),
   // Handle Rax base components.
-  require('./components'),
+  require('./component'),
   // JSX+ Directives
   require('./jsx-plus'),
   // Directive a:for

@@ -1,5 +1,8 @@
 /* global @system */
 import router from '@system.router';
+import {
+  COMPONENT_DID_MOUNT,
+} from '../cycles';
 
 export function redirectTo(options) {
   options.uri = options.url;
@@ -64,5 +67,12 @@ export function updateData(data) {
     } else {
       this._internal[item] = data[item]
     }
-  })
+  });
+
+  // trigger did mount
+  this._trigger(COMPONENT_DID_MOUNT);
+  let callback;
+  while (callback = this._pendingCallbacks.pop()) {
+    callback();
+  }
 }

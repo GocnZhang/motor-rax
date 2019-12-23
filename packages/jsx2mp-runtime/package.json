@@ -1,12 +1,13 @@
 {
   "name": "@ali/motor-jsx2mp-runtime",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Runtime for motor jsx2mp.",
   "miniprogram": {
     "ali": "dist/jsx2mp-runtime.ali.esm.js",
     "wechat": "dist/jsx2mp-runtime.wechat.esm.js",
     "quickapp": "dist/jsx2mp-runtime.quickapp.esm.js"
   },
+  "license": "BSD-3-Clause",
   "publishConfig": {
     "registry": "http://registry.npm.alibaba-inc.com"
   },

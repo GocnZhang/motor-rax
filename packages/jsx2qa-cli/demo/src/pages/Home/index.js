@@ -63,6 +63,7 @@ export default class Home extends Component {
       componentWillUpdated = false,
       componentDidUpdated = false,
       componentWillUnmounted = false,
+      list,
     } = this.state;
     return (
       <View class="demo-wrap">

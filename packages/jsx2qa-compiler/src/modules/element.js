@@ -56,7 +56,7 @@ function transformTemplate(
     }
 
     const isEventHandler = isEventHandlerAttr(attributeName);
-
+    
     switch (expression.type) {
       // <div foo={'string'} /> -> <div foo="string" />
       // <div>{'hello world'}</div> -> <div>hello world</div>
@@ -156,10 +156,13 @@ function transformTemplate(
       // <div>{bar}</div>  -> <div>{{ bar }}</div>
       case 'Identifier':
         if (type === ATTR) {
+          // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
+          const openNodeName = parentPath.parentPath.node.name.name;
+          const nativeRaxComponent = /rax-/g.test(openNodeName);
           if (expression.name === 'undefined') {
             parentPath.remove(); // Remove jsxAttribute
             break;
-          } else if (isEventHandler) {
+          } else if (isEventHandler && !nativeRaxComponent) {
             const name = dynamicEvents.add({
               expression,
               isDirective,
@@ -176,6 +179,13 @@ function transformTemplate(
             );
           }
         } else if (type === ELE) {
+          // <view for={(item, index) in list} />
+          const forParams = isForList(path);
+          const matchName = matchForList(expression, forParams);
+          if (forParams && matchName) {
+            path.replaceWith(createJSXBinding(matchName));
+            break;
+          }
           if (expression.name === 'undefined') {
             path.remove(); // Remove expression
             break;
@@ -249,7 +259,10 @@ function transformTemplate(
       // <tag>{ foo.bar }</tag> => <tag>{{ _d0.bar }}</tag>
       case 'MemberExpression':
         if (type === ATTR) {
-          if (isEventHandler) {
+          // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
+          const openNodeName = parentPath.parentPath.node.name.name;
+          const nativeRaxComponent = /rax-/g.test(openNodeName);
+          if (isEventHandler && !nativeRaxComponent) {
             const name = dynamicEvents.add({
               expression,
               isDirective,
@@ -269,6 +282,13 @@ function transformTemplate(
             );
           }
         } else if (type === ELE) {
+          // <view for={(item, index) in list} />
+          const forParams = isForList(path);
+          const matchName = matchForList(expression, forParams);
+          if (forParams && matchName) {
+            path.replaceWith(createJSXBinding(matchName));
+            break;
+          }
           const replaceNode = transformMemberExpression(
             expression,
             dynamicValues,
@@ -375,6 +395,17 @@ function transformTemplate(
             path.replaceWith(t.stringLiteral(createBinding(expressionName)));
           else if (type === ELE)
             path.replaceWith(createJSXBinding(expressionName));
+        
+        } else if (isForList(path)) {
+          // <view for={(item, index) in list} />
+          if (type === ATTR) {
+            const expressionName = dynamicValues.add({
+              expression: expression.right,
+              isDirective,
+            });
+            const left = expression.left.expressions.map((v) => v.name).join(',');
+            path.replaceWith(t.stringLiteral(`(${left}) in ${expressionName}`));
+          }
         } else {
           path.traverse({
             Identifier(innerPath) {
@@ -622,6 +653,31 @@ function transformMemberExpression(expression, dynamicBinding, isDirective) {
   }
 
   return t.memberExpression(objectReplaceNode, propertyReplaceNode, computed);
+}
+
+/**
+ * Path has for
+ * */
+function isForList(path) {
+  if(path._forParams) return path._forParams;
+  if(!path.parentPath) return false;
+  return isForList(path.parentPath)
+}
+/**
+ * element match forParams
+ * */
+function matchForList(expression, forParams) {
+  const { forItem, forIndex, forList } = forParams;
+  let name = null;
+  if(t.isIdentifier(expression)) {
+    name = expression.name
+  }
+  if(t.isMemberExpression(expression)) {
+    name = expression.object.name
+  }
+  if(name === forItem || name === forIndex || name === forList) {
+    return name;
+  }
 }
 
 /**

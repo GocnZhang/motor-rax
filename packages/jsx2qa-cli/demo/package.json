@@ -8,6 +8,7 @@
     "rax-image": "^1.0.0",
     "rax-app": "^0.2.0",
     "rax-view": "^1.0.2",
-    "@ali/motor-rax-text": "^1.0.0"
+    "@ali/motor-rax-text": "^1.0.0",
+    "@ali/motor-rax-link": "^0.0.2"
   }
 }

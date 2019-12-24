@@ -1,8 +1,9 @@
 import { Component, render } from 'rax';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
-import C from './component';
-import D from './functionalComponent';
+import Link from '@ali/motor-rax-link';
+import C from '../../components/component';
+import D from '../../components/functionalComponent';
 import './index.css';
 
 export default class Home extends Component {
@@ -52,6 +53,7 @@ export default class Home extends Component {
           <View><text class="demo-subtitle">2.onXxxx属性方法传递</text></View>
           <D title="onXxxx属性方法传递" onCountClick={this.onCountClick} />
         </View> */}
+        <Link className="demo-link" src="/pages/HomeFunc">跳转 functional page</Link>
         <View class="demo-block">
           {/* <View><Text class="demo-title">jsx语法验证</Text></View>
           <View><text class="demo-subtitle">1.if else</text></View>
@@ -63,12 +65,12 @@ export default class Home extends Component {
           {/* <View><text class="demo-subtitle">3.x-class</text></View>
           <View x-class={{ 'demo-content': true, 'margin-bigger': count.num === 2 }}>
             count num 等于2, 左间距会变大
-          </View> */}
-        </View> 
+          </View>
+        </View>
         <View class="demo-block">
           <View><Text class="demo-title">render function</Text></View>
           {/* {this.renderCount()} */}
-        </View>   
+        </View>
       </View>
     )
   }

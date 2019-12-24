@@ -7,10 +7,10 @@ const a = 0;
 const b = 2;
 
 export default function Index(props) {
-  function handleClick() {
-    props.countClick && props.countClick();
-    props.onCountClick && props.onCountClick();
-  }
+  // function handleClick() {
+  //   props.countClick && props.countClick();
+  //   props.onCountClick && props.onCountClick();
+  // }
   console.log(props.title, props);
   return (
     <View class="my-view">

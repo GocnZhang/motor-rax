@@ -12,8 +12,25 @@ export default class Index extends Component {
     this.props.countClick && this.props.countClick();
     this.props.onCountClick && this.props.onCountClick();
   }
+  componentWillMount() {
+    console.log('组件生命周期 --- componentWillMount');
+  }
+  componentDidMount() {
+    console.log('组件生命周期 --- componentDidMount');
+  }
+  componentWillUnmount() {
+    console.log('组件生命周期 --- componentWillUnmount');
+  }
+  componentWillReceiveProps(nextProps) {
+    console.log('组件生命周期 --- nextProps', nextProps);
+  }
+  componentWillUpdate(nextProps, nextState) {
+    console.log('组件生命周期 --- componentWillUpdate', nextProps, nextState);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    console.log('组件生命周期 --- componentDidUpdate', prevProps, prevState);
+  }
   render() {
-    console.log(this.props.title, this.props);
     return (
       <View class="my-view">
         <div data-index="222" onclick={this.handleClick}>
@@ -22,5 +39,5 @@ export default class Index extends Component {
       </View>
     );
   }
-  
+
 }

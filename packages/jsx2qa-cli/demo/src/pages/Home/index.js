@@ -12,7 +12,14 @@ export default class Home extends Component {
       name: '计数器',
       num: 0
     },
-    list: [1, 2, 3]
+    list: [1, 2, 3],
+    updated: false,
+    componentWillMounted: false,
+    componentDidMounted: false,
+    componentWillReceivePropsed: false,
+    componentWillUpdated: false,
+    componentDidUpdated: false,
+    componentWillUnmounted: false,
   }
   onCountClick = () => {
     console.log('onclick');
@@ -26,10 +33,50 @@ export default class Home extends Component {
     const { count } = this.state;
     return <View>{count.num}</View>
   }
+  update() {
+    this.setState({updated: true});
+  }
+  componentWillMount() {
+    this.setState({componentWillMounted: true});
+  }
+  componentDidMount() {
+    this.setState({componentDidMounted: true});
+  }
+  componentWillUnmount() {
+    console.log('unmount excuted');
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({componentWillReceivePropsed: nextProps});
+  }
+  componentWillUpdate() {
+    this.setState({componentWillUpdated: true});
+  }
+  componentDidUpdate() {
+    this.setState({componentDidUpdated: true});
+  }
   render() {
-    const { count } = this.state;
+    const {
+      count,
+      componentWillMounted = false,
+      componentDidMounted = false,
+      componentWillReceivePropsed = false,
+      componentWillUpdated = false,
+      componentDidUpdated = false,
+      componentWillUnmounted = false,
+    } = this.state;
     return (
       <View class="demo-wrap">
+        <View class="demo-block">
+          <View><Text class="demo-title">生命周期验证</Text></View>
+          <View onClick={this.update}><Text style="color: blue;">点我update</Text></View>
+          <View><text class="demo-subtitle">componentWillMount ---- {componentWillMounted}</text></View>
+          <View><text class="demo-subtitle">componentDidMount ---- {componentDidMounted}</text></View>
+          <View><text class="demo-subtitle">componentWillReceiveProps ---- {componentWillReceivePropsed}</text></View>
+          <View><text class="demo-subtitle">componentWillUpdate ---- {componentWillUpdated}</text></View>
+          <View><text class="demo-subtitle">componentDidUpdate ---- {componentDidUpdated}</text></View>
+          <View><text class="demo-subtitle">componentWillUnmount ---- {componentWillUnmounted}</text></View>
+        </View>
+        <C updated={this.state.updated} />
         {/* <View class="demo-block">
           <View><Text class="demo-title">样式测试</Text></View>
           <View><text class="demo-subtitle" style="color: red">1.内联字符串</text></View>
@@ -53,15 +100,15 @@ export default class Home extends Component {
           <View><text class="demo-subtitle">2.onXxxx属性方法传递</text></View>
           <D title="onXxxx属性方法传递" onCountClick={this.onCountClick} />
         </View> */}
-        <Link className="demo-link" src="/pages/HomeFunc">跳转 functional page</Link>
-        <View class="demo-block">
+        <Link className="demo-link" href="/pages/HomeFunc">跳转 functional page</Link>
+        {/* <View class="demo-block"> */}
           {/* <View><Text class="demo-title">jsx语法验证</Text></View>
           <View><text class="demo-subtitle">1.if else</text></View>
           <View class="demo-content" x-if={count.num < 2}>count num小于2</View>
           <View class="demo-content" x-elseif={count.num === 2}>count num等于2</View>
           <View class="demo-content" x-else>count num大于2</View> */}
-          <View><text class="demo-subtitle">2.for</text></View>
-          <View x-for={(item, index) in list}>{item}</View>
+          {/* <View><text class="demo-subtitle">2.for</text></View> */}
+          {/* <View x-for={(item, index) in list}>{item}</View> */}
           {/* <View><text class="demo-subtitle">3.x-class</text></View>
           <View x-class={{ 'demo-content': true, 'margin-bigger': count.num === 2 }}>
             count num 等于2, 左间距会变大
@@ -70,7 +117,7 @@ export default class Home extends Component {
         <View class="demo-block">
           <View><Text class="demo-title">render function</Text></View>
           {/* {this.renderCount()} */}
-        </View>
+        {/* </View> */}
       </View>
     )
   }

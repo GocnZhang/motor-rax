@@ -7,11 +7,13 @@ let _customId = 0;
 export default function getId(type, internal) {
   switch (type) {
     case 'tag':
-      return internal[PROPS][TAGID] === undefined ? `t_${_customId++}` : internal[PROPS][TAGID];
+      return internal["_attrs"]["tagId"] === undefined ? "t_" + _customId++ : internal["_attrs"]["tagId"];
+
     case 'parent':
-      return internal[PROPS][PARENTID] === undefined ? `p_${_customId++}` : internal['_parent'][DATA][TAGID];
+      return !internal['_parent'] || !internal['_parent']["data"] || !internal['_parent']["data"]["tag-id"] === undefined ? "p_" + _customId++ : internal['_parent']["data"]["tag-id"];
+
     default:
       // For troubleshoot
-      return `d_${_customId++}`;
+      return "d_" + _customId++;
   }
 }

@@ -31,7 +31,7 @@ function transformAttribute(ast, code, adapter) {
           } 
           break;
         case 'style':
-          if (adapter.styleKeyword && /[A-Z]+/g.test(parentPath.node.name.name) || /c-/g.test(parentPath.node.name.name)) {
+          if (adapter.styleKeyword && /(c)?-/g.test(parentPath.node.name.name)) {
             node.name.name = 'style-sheet';
           }
           break;

@@ -27,7 +27,7 @@ export default class Home extends Component {
     return <View>{count.num}</View>
   }
   render() {
-    const { count } = this.state;
+    const { count, list } = this.state;
     return (
       <View class="demo-wrap">
         {/* <View class="demo-block">
@@ -53,7 +53,7 @@ export default class Home extends Component {
           <View><text class="demo-subtitle">2.onXxxx属性方法传递</text></View>
           <D title="onXxxx属性方法传递" onCountClick={this.onCountClick} />
         </View> */}
-        <Link className="demo-link" src="/pages/HomeFunc">跳转 functional page</Link>
+        <Link className="demo-link" src="/pages/HomeFunc" onCountClick={this.onCountClick}>跳转 functional page</Link>
         <View class="demo-block">
           {/* <View><Text class="demo-title">jsx语法验证</Text></View>
           <View><text class="demo-subtitle">1.if else</text></View>

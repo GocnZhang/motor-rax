@@ -156,9 +156,6 @@ function transformDirectiveList(ast, code, adapter) {
       if (t.isJSXIdentifier(node.name, { name: 'x-for' })) {
         node.name.name = 'for';
         if(t.isJSXExpressionContainer(node.value)) {
-          console.log(111);
-        }
-        if(t.isJSXExpressionContainer(node.value)) {
           const { expression } = node.value
           // x-for={list}
           if(t.isIdentifier(expression)) {

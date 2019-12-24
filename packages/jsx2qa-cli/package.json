@@ -22,7 +22,7 @@
   "dependencies": {
     "@ali/jsx2qa-loader": "^0.1.5",
     "@ali/jsx2qa-compiler": "^0.1.1",
-    "@ali/motor-jsx2mp-runtime": "0.1.2",
+    "@ali/motor-jsx2mp-runtime": "0.1.3",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",

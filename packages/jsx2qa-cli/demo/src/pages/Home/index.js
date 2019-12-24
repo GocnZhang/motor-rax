@@ -1,8 +1,9 @@
 import { Component, render } from 'rax';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
-import C from './component';
-import D from './functionalComponent';
+import Link from '@ali/motor-rax-link';
+import C from '../../components/component';
+import D from '../../components/functionalComponent';
 import './index.css';
 
 export default class Home extends Component {
@@ -20,6 +21,7 @@ export default class Home extends Component {
     const { count } = this.state;
     return (
       <View class="demo-wrap">
+        <View><Text class="demo-title">class component page</Text></View>
         <View class="demo-block">
           <View><Text class="demo-title">样式测试</Text></View>
           <View><text class="demo-subtitle" style="color: red">1.内联字符串</text></View>
@@ -50,6 +52,7 @@ export default class Home extends Component {
         </View>
         <View x-if={count <= 0}>这是一个数字</View>
         <View x-else >这是更新的数字</View> */}
+        <Link className="demo-link" src="/pages/HomeFunc">跳转 functional page</Link>
       </View>
     )
   }

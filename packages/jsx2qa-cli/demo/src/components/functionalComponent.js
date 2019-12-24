@@ -7,14 +7,14 @@ const a = 0;
 const b = 2;
 
 export default function Index(props) {
-  function handleClick() {
-    props.countClick && props.countClick();
-    props.onCountClick && props.onCountClick();
-  }
+  // function handleClick() {
+  //   props.countClick && props.countClick();
+  //   props.onCountClick && props.onCountClick();
+  // }
   console.log(props.title, props);
   return (
     <View class="my-view">
-      <Text class="my-content" onclick={handleClick} style={props.style}>这是一个functional组件，点我</Text>
+      <Text class="my-content" style={props.style}>这是一个functional组件，点我</Text>
     </View>
   );
 }

@@ -152,9 +152,15 @@ function transformDirectiveClass(ast, parsed) {
 function transformDirectiveList(ast, code, adapter) {
   traverse(ast, {
     JSXAttribute(path) {
-      const { node } = path;
+      const { node, parentPath } = path;
       if (t.isJSXIdentifier(node.name, { name: 'x-for' })) {
-        node.name.name = 'for'
+        node.name.name = 'for';
+        if(t.isJSXExpressionContainer(node.value)) {
+          console.log(111);
+        }
+        // parentPath.parentPath._forParams = {
+        //   forItem: 
+        // }
         // Check stynax.
         // if (!t.isJSXExpressionContainer(node.value)) {
         //   throw new CodeError(code, node, node.loc, 'Invalid x-for usage');

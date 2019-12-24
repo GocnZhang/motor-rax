@@ -14,7 +14,7 @@ export default function Index(props) {
   console.log(props.title, props);
   return (
     <View class="my-view">
-      <Text class="my-content" style={props.style}>这是一个functional组件，点我</Text>
+      <Text class="my-content" onClick={handleClick} style={props.style}>这是一个functional组件，点我</Text>
     </View>
   );
 }

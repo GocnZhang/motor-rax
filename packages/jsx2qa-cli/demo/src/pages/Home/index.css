@@ -1,6 +1,7 @@
 .demo-wrap{
   align-items: flex-start;
   flex-direction: column;
+  overflow: auto;
 }
 .demo-block{
   flex-direction: column;
@@ -9,6 +10,7 @@
   font-size: 48rpx;
   font-weight: 700;
   margin-bottom: 30rpx;
+  margin-top: 24rpx;
 }
 .demo-subtitle{
   margin-left: 24rpx;
@@ -17,4 +19,10 @@
 }
 .demo-link {
   border: 1rpx solid #000;
+}
+.demo-content{
+  margin-left: 24rpx;
+}
+.margin-bigger{
+  margin-left: 48px;
 }

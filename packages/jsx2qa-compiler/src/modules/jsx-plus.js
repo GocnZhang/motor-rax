@@ -158,9 +158,36 @@ function transformDirectiveList(ast, code, adapter) {
         if(t.isJSXExpressionContainer(node.value)) {
           console.log(111);
         }
-        // parentPath.parentPath._forParams = {
-        //   forItem: 
-        // }
+        if(t.isJSXExpressionContainer(node.value)) {
+          const { expression } = node.value
+          // x-for={list}
+          if(t.isIdentifier(expression)) {
+            parentPath.parentPath._forParams = {
+              forItem: '',
+              forIndex: '',
+              forList: expression.name
+            }
+          }
+          if(t.isBinaryExpression(expression)) {
+            // x-for={(item, index) in list}
+            if(t.isSequenceExpression(expression.left)) {
+              const { expressions } = expression.left
+              parentPath.parentPath._forParams = {
+                forItem: expressions[0].name,
+                forIndex: expressions[1].name,
+                forList: expression.right.name
+              }
+            }
+            // x-for={(item) in list}
+            if(t.isIdentifier(expression.left)) {
+              parentPath.parentPath._forParams = {
+                forItem: expression.left.name,
+                forIndex: '',
+                forList: expression.right.name
+              }
+            }
+          }
+        }
         // Check stynax.
         // if (!t.isJSXExpressionContainer(node.value)) {
         //   throw new CodeError(code, node, node.loc, 'Invalid x-for usage');

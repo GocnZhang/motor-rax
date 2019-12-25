@@ -65,12 +65,8 @@ export function updateData(data) {
   const useSetData = {};
 
   for (let key in data) {
-    if (Array.isArray(data[key]) && diffArray(this.state[key], data[key])) {
-      useSetData[key] = [this.state[key].length, 0].concat(data[key].slice(this.state[key].length));
-    } else {
-      if (diffData(this.state[key], data[key])) {
-        useSetData[key] = data[key];
-      }
+    if (diffData(this.state[key], data[key])) {
+      useSetData[key] = data[key];
     }
   }
 
@@ -101,14 +97,6 @@ function isEmptyObj(obj) {
     return false;
   }
   return true;
-}
-
-function diffArray(prev, next) {
-  if (!Array.isArray(prev)) return false;
-  // Only concern about list append case
-  if (next.length === 0) return false;
-  if (prev.length === 0) return false;
-  return next.slice(0, prev.length).every((val, index) => prev[index] === val);
 }
 
 function diffData(prevData, nextData) {

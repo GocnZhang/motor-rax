@@ -116,7 +116,8 @@ function output(content, raw, options) {
     writeFileWithDirCheck(outputPath.template, uxTxt);
   }
   if (css) {
-    writeFileWithDirCheck(outputPath.css, css);
+    // 修改rpx为px
+    writeFileWithDirCheck(outputPath.css, css.replace(/rpx/g, 'px'));
   }
   if (config) {
     writeFileWithDirCheck(outputPath.config, config);

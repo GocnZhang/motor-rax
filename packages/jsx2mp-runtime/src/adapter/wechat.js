@@ -117,3 +117,33 @@ export function updateData(data) {
     }
   });
 }
+
+function isEmptyObj(obj) {
+  for (let key in obj) {
+    return false;
+  }
+  return true;
+}
+
+function diffArray(prev, next) {
+  if (!Array.isArray(prev)) return false;
+  // Only concern about list append case
+  if (next.length === 0) return false;
+  if (prev.length === 0) return false;
+  return next.slice(0, prev.length).every((val, index) => prev[index] === val);
+}
+
+function diffData(prevData, nextData) {
+  const prevType = typeof prevData;
+  const nextType = typeof nextData;
+  if (prevType !== nextType) return true;
+  if (prevType === 'object' && prevData !== null && nextData !== null) {
+    const prevKeys = Object.keys(prevData);
+    const nextKeys = Object.keys(nextData);
+    if (prevKeys.length !== nextKeys.length) return true;
+    if (prevKeys.length === 0) return false;
+    return !prevKeys.every(key => prevData[key] === nextData[key] );
+  } else {
+    return prevData !== nextData;
+  }
+}

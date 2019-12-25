@@ -308,7 +308,6 @@ function renameNpmModules(ast, npmRelativePath, filename, cwd) {
     }
     const realNpmName = relative(nodeModulePath, moduleBasePath);
     const modulePathSuffix = relative(moduleBasePath, target);
-    console.log('modulePathSuffix', modulePathSuffix);
     let ret = join(prefix, realNpmName, modulePathSuffix);
     if (ret[0] !== '.') ret = './' + ret;
     // ret => '../npm/_ali/universal-toast/lib/index.js

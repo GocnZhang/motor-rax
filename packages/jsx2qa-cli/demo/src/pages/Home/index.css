@@ -11,6 +11,7 @@
   font-weight: 700;
   margin-bottom: 30rpx;
   margin-top: 24rpx;
+  border-bottom: 1rpx solid #333;
 }
 .demo-subtitle{
   margin-left: 24rpx;

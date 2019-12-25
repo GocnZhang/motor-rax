@@ -31,9 +31,6 @@ export default class Home extends Component {
       })
     })
   }
-  componentDidMount() {
-    getCacheCityInfo()
-  }
   renderCount() {
     const { count } = this.state;
     return <View>{count.num}</View>
@@ -46,8 +43,10 @@ export default class Home extends Component {
   }
   componentDidMount() {
     this.setState({componentDidMounted: true});
-    // Utils.getCacheCityInfo()
     console.log('componentDidMount')
+    getCacheCityInfo().then(res => {
+      console.log('getCacheCityInfo', res)
+    })
   }
   componentWillUnmount() {
     console.log('unmount excuted');
@@ -116,10 +115,12 @@ export default class Home extends Component {
           <View class="demo-content" x-elseif={count.num === 2}>count num等于2</View>
           <View class="demo-content" x-else>count num大于2</View> */}
           <View><text class="demo-subtitle">2.for</text></View>
-          {list.map((v) => {
-            return <View>{v}</View>
+          <View><text class="demo-subtitle">for map</text></View>
+          {list.map((v, index) => {
+            return <View>{v}-{index}</View>
           })}
-          
+          <View><text class="demo-subtitle">x-for</text></View>
+          <View x-for={(v, index) in list}>{v}-{index}</View>
           {/* <View><text class="demo-subtitle">3.x-class</text></View>
           <View x-class={{ 'demo-content': true, 'margin-bigger': count.num === 2 }}>
             count num 等于2, 左间距会变大

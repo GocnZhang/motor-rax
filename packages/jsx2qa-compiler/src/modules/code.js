@@ -1,6 +1,7 @@
 const t = require('@babel/types');
 const { join, relative, dirname, resolve, extname } = require('path');
 const { parseExpression } = require('../parser');
+const { readJSONSync } = require('fs-extra');
 const isClassComponent = require('../utils/isClassComponent');
 const isFunctionComponent = require('../utils/isFunctionComponent');
 const traverse = require('../utils/traverseNodePath');
@@ -33,6 +34,7 @@ const getRuntimeByPlatform = (platform) => `${RUNTIME}/dist/jsx2mp-runtime.${pla
 const isAppRuntime = (mod) => mod === 'rax-app';
 const isFileModule = (mod) => /\.(png|jpe?g|gif|bmp|webp)$/.test(mod);
 const isRelativeImport = (mod) => mod[0] === '.';
+const isUnivisalUtils = (mod) => mod === '@ali/motor-universal-utils';
 
 const isCoreHooksAPI = (node) => [USE_EFFECT, USE_STATE, USE_CONTEXT, USE_REF, USE_REDUCER].includes(node.name);
 
@@ -101,6 +103,7 @@ module.exports = {
     removeRaxImports(parsed.ast);
     ensureIndexPathInImports(parsed.ast, resourcePath); // In WeChat miniapp, `require` can't get index file if index is omitted
     renameCoreModule(parsed.ast, runtimePath);
+    // motor-universal-utils => motor-universal-utils/quickapp
     renameFileModule(parsed.ast);
     renameAppConfig(parsed.ast, sourcePath, resourcePath);
 
@@ -204,6 +207,18 @@ function renameCoreModule(ast, runtimePath) {
   });
 }
 
+// function renameUtils(ast) {
+//   traverse(ast, {
+//     ImportDeclaration(path) {
+//       const source = path.get('source');
+//       console.log('source.node.value', source.node.value);
+//       if (source.isStringLiteral() && isUnivisalUtils(source.node.value)) {
+//         source.replaceWith(t.stringLiteral(runtimePath));
+//       }
+//     }
+//   });
+// }
+
 // import img from '../assets/img.png' => const img = '../assets/img.png'
 function renameFileModule(ast) {
   traverse(ast, {
@@ -276,8 +291,9 @@ function renameNpmModules(ast, npmRelativePath, filename, cwd) {
     const npmName = getNpmName(value);
     const nodeModulePath = join(rootContext, 'node_modules');
     const searchPaths = [nodeModulePath];
-    const target = require.resolve(npmName, { paths: searchPaths });
-    // In tnpm, target will be like following (symbol linked path):
+    let target = require.resolve(npmName, { paths: searchPaths });
+    
+    // In tnpm, 'target will be like following (symbol linked path):
     // ***/_universal-toast_1.0.0_universal-toast/lib/index.js
     let packageJSONPath;
     try {
@@ -285,11 +301,14 @@ function renameNpmModules(ast, npmRelativePath, filename, cwd) {
     } catch (err) {
       throw new Error(`You may not have npm installed: "${npmName}"`);
     }
-
+    const packageJSON = readJSONSync(packageJSONPath);
     const moduleBasePath = join(packageJSONPath, '..');
+    if(packageJSON.quickappConfig) {
+      target = join(moduleBasePath, packageJSON.quickappConfig.main)
+    }
     const realNpmName = relative(nodeModulePath, moduleBasePath);
     const modulePathSuffix = relative(moduleBasePath, target);
-
+    console.log('modulePathSuffix', modulePathSuffix);
     let ret = join(prefix, realNpmName, modulePathSuffix);
     if (ret[0] !== '.') ret = './' + ret;
     // ret => '../npm/_ali/universal-toast/lib/index.js

@@ -117,7 +117,13 @@ function transformList(ast, renderItemFunctions, adapter, code) {
                 loopFnBody: body
               };
 
+
               parentPath.replaceWith(listBlock);
+              parentPath._forParams = {
+                forItem: forItem.name,
+                forIndex: forIndex.name,
+                forList: callee.object
+              }
               returnElPath.replaceWith(t.objectExpression(properties));
             } else if (t.isIdentifier(args[0]) || t.isMemberExpression(args[0])) {
               // { foo.map(this.xxx) }

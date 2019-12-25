@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "main": "component.js",
   "dependencies": {
-    "rax": "^1.0.8",
-    "rax-image": "^1.0.0",
-    "rax-app": "^0.2.0",
-    "rax-view": "^1.0.2",
+    "@ali/motor-rax-link": "^0.0.2",
     "@ali/motor-rax-text": "^1.0.0",
-    "@ali/motor-rax-link": "^0.0.3",
-    "@ali/motor-universal-utils": "^0.0.1"
+    "@ali/motor-universal-utils": "^0.0.1",
+    "rax": "^1.0.8",
+    "rax-app": "^0.2.0",
+    "rax-image": "^1.0.0",
+    "rax-view": "^1.0.2"
   }
 }

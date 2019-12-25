@@ -25,7 +25,7 @@ export default function Index() {
         <View><text class="demo-subtitle">2.onXxxx属性方法传递</text></View>
         <C title="onXxxx属性方法传递" onCountClick={onCountClick} />
         <View><text class="demo-subtitle">3.预设组件(属性命名)</text></View>
-        <View><Text class="demo-title" style="color:red;" numberOfLines>样式测试</Text></View>
+        <View><Text class="demo-title" style="color:red;" numberOfLines={1}>样式测试样式测试样式测试样式测试样式测试样式测试样式测试样式测试样式测试样式测试</Text></View>
       </View>
       <View class="demo-block">
         <View><Text class="demo-title">functional组件</Text></View>

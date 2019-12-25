@@ -15,6 +15,7 @@ const ELE = Symbol('element');
 const isDirectiveAttr = attr => /^(a:|wx:|x-)/.test(attr);
 const isEventHandlerAttr = propKey => /^on[A-Z]/.test(propKey);
 const BINDING_REG = /{{|}}/g;
+const renderFuncReg = /StateTemp[0-9]+/;
 
 /**
  * 1. Normalize jsxExpressionContainer to binding var.
@@ -271,6 +272,12 @@ function transformTemplate(
             replaceNode.__transformed = true;
             path.replaceWith(replaceNode);
           } else {
+            // // this.xxx() => <View>{count}</View> => <View>{{xxxStateTemp1.count}}</View>
+            const expressionName = getExpressionName(expression)
+            if(renderFuncReg.test(expressionName)) {
+              path.replaceWith(t.stringLiteral(createBinding(genExpression(expression))));
+              break;
+            }
             const replaceNode = transformMemberExpression(
               expression,
               dynamicValues,
@@ -282,6 +289,12 @@ function transformTemplate(
             );
           }
         } else if (type === ELE) {
+          // this.xxx() => <View>{count}</View> => <View>{{xxxStateTemp1.count}}</View>
+          const expressionName = getExpressionName(expression)
+          if(renderFuncReg.test(expressionName)) {
+            path.replaceWith(createJSXBinding(genExpression(expression)));
+            break;
+          }
           // <view for={(item, index) in list} />
           const forParams = isForList(path);
           const matchName = matchForList(expression, forParams);
@@ -403,7 +416,7 @@ function transformTemplate(
               expression: expression.right,
               isDirective,
             });
-            const left = expression.left.expressions.map((v) => v.name).join(',');
+            const left = expression.left.expressions.reverse().map((v) => v.name).join(',');
             path.replaceWith(t.stringLiteral(`(${left}) in ${expressionName}`));
           }
         } else {
@@ -545,6 +558,15 @@ function transformTemplate(
     dynamicValues: dynamicValues.getStore(),
     dynamicEvents: dynamicEvents.getStore(),
   };
+}
+
+function getExpressionName(expression) {
+  if (t.isIdentifier(expression.object)) {
+    return expression.object.name
+  }
+  if (t.isMemberExpression(expression.object)) {
+    return getExpressionName(expression.object)
+  }
 }
 
 function hasComplexExpression(path) {

@@ -22,7 +22,7 @@ export default class Index extends Component {
     console.log('组件生命周期 --- componentWillUnmount');
   }
   componentWillReceiveProps(nextProps) {
-    console.log('组件生命周期 --- nextProps', nextProps);
+    console.log('组件生命周期 --- componentWillReceiveProps', nextProps);
   }
   componentWillUpdate(nextProps, nextState) {
     console.log('组件生命周期 --- componentWillUpdate', nextProps, nextState);

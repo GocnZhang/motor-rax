@@ -1,4 +1,4 @@
-import { render, useState } from 'rax';
+import { render, useState, useEffect, usePageShow, usePageHide } from 'rax';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
 import C from '../../components/component';
@@ -11,6 +11,19 @@ export default function Index() {
   function onCountClick() {
     setCount(count+1)
   }
+  useEffect(() => {
+    console.log('useEffect excuted');
+    setCount(99)
+  }, ['count']);
+
+  // usePageShow(() => {
+  //   console.log('usePageShow excuted');
+  // })
+
+  usePageHide(() => {
+    console.log('usePageHide excuted');
+  })
+
   return <View class="demo-wrap">
       <View><Text class="demo-title">functional component page</Text></View>
       <View class="demo-block">

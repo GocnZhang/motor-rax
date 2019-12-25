@@ -4,6 +4,7 @@ import Text from '@ali/motor-rax-text';
 import Link from '@ali/motor-rax-link';
 import C from '../../components/component';
 import D from '../../components/functionalComponent';
+// import Utils from '@ali/motor-universal-utils';
 import './index.css';
 
 export default class Home extends Component {
@@ -33,7 +34,7 @@ export default class Home extends Component {
     const { count } = this.state;
     return <View>{count.num}</View>
   }
-  update() {
+  update = () => {
     this.setState({updated: true});
   }
   componentWillMount() {
@@ -41,6 +42,8 @@ export default class Home extends Component {
   }
   componentDidMount() {
     this.setState({componentDidMounted: true});
+    // Utils.getCacheCityInfo()
+    console.log('componentDidMount')
   }
   componentWillUnmount() {
     console.log('unmount excuted');

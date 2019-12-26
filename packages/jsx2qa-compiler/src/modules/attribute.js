@@ -23,11 +23,7 @@ function transformAttribute(ast, code, adapter) {
               path.parentPath.node.attributes.push(t.jsxAttribute(t.jsxIdentifier('class'), node.value));
             }
           } else{
-            if (isNativeComponent(path)) {
-              node.name.name = 'class';
-            } else {
-              node.name.name = 'class-name';
-            }
+            node.name.name = 'class';
           } 
           break;
         case 'style':

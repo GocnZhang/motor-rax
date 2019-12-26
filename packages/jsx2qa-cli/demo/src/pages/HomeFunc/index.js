@@ -1,4 +1,5 @@
-import { render, useState, useEffect, usePageShow, usePageHide } from 'rax';
+import { render, useState, useEffect } from 'rax';
+import { usePageShow, usePageHide } from 'rax-app';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
 import C from '../../components/component';
@@ -16,9 +17,9 @@ export default function Index() {
     setCount(99)
   }, ['count']);
 
-  // usePageShow(() => {
-  //   console.log('usePageShow excuted');
-  // })
+  usePageShow(() => {
+    console.log('usePageShow excuted');
+  })
 
   usePageHide(() => {
     console.log('usePageHide excuted');

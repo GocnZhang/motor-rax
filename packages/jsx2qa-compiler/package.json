@@ -1,13 +1,13 @@
 {
   "name": "@ali/jsx2qa-compiler",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Transform JSX styled Rax Components into quickapp parts.",
   "main": "src/index.js",
   "scripts": {
     "test": "jest --coverage --testPathIgnorePatterns=__modules__",
     "test:watch": "npm run test -- --watchAll",
     "start": "node ./test/index.js",
-    "jest": "jest ./src/modules/__tests__/components.js",
+    "jest": "jest ./src/modules/__tests__/template.js",
     "list": "node ./src/modules/__tests__/list-test.js"
   },
   "repository": {

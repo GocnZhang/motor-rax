@@ -1,6 +1,6 @@
 {
   "name": "@ali/motor-jsx2mp-runtime",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "Runtime for motor jsx2mp.",
   "miniprogram": {
     "ali": "dist/jsx2mp-runtime.ali.esm.js",

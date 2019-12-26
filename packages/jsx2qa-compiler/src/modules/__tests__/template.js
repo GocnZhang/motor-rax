@@ -49,7 +49,7 @@ describe('Transform template', () => {
     const ast = parseCode(code);
     const defaultExportedPath = getDefaultExportedPath(ast, code);
     const { templateAST, renderFunctionPath } = _transformTemplate(defaultExportedPath, code, {});
-    expect(genExpression(templateAST)).toEqual(`<template><View>
+    expect(genExpression(templateAST)).toEqual(`<template pagePath="true"><View>
         <Image ref="hello" style={styles.logo} onClick={this.mathRodom.bind(this)} source={{
       uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png'
     }} />
@@ -66,7 +66,7 @@ describe('Transform template', () => {
     const ast = parseCode(functionCode);
     const defaultExportedPath = getDefaultExportedPath(ast, functionCode);
     const { templateAST, renderFunctionPath } = _transformTemplate(defaultExportedPath, functionCode, {});
-    expect(genExpression(templateAST)).toEqual(`<template><View>
+    expect(genExpression(templateAST)).toEqual(`<template pagePath="true"><View>
           <Image ref="hello" style={styles.logo} onClick={this.mathRodom.bind(this)} source={{
       uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png'
     }} />
@@ -106,12 +106,47 @@ describe('Transform template', () => {
     const ast = parseCode(textCode);
     const defaultExportedPath = getDefaultExportedPath(ast, textCode);
     const { templateAST, renderFunctionPath } = _transformTemplate(defaultExportedPath, textCode, {});
-    expect(genExpression(templateAST)).toEqual(`<template><View>
+    expect(genExpression(templateAST)).toEqual(`<template pagePath="true"><View>
             <Image ref="hello" style={styles.logo} onClick={this.mathRodom.bind(this)} source={{
       uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png'
     }} /><text>
             hello world
             </text><View><text>123</text></View>
+          </View></template>`);
+  });
+  it('expression add text', () => {
+    const textCode = `
+    import { createElement, Component } from 'rax';
+    import View from 'rax-view';
+    import Image from 'rax-image';
+    
+    export default class Logo extends Component{
+      render() {
+        return (
+          <View>
+            <Image
+              ref="hello"
+              style={styles.logo}
+              onClick={this.mathRodom.bind(this)}
+              source={{
+                uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png',
+              }}
+            />
+            hello world
+            <View>{count}</View>
+          </View>
+        );
+      }
+    };`
+    const ast = parseCode(textCode);
+    const defaultExportedPath = getDefaultExportedPath(ast, textCode);
+    const { templateAST, renderFunctionPath } = _transformTemplate(defaultExportedPath, textCode, {});
+    expect(genExpression(templateAST)).toEqual(`<template pagePath="true"><View>
+            <Image ref="hello" style={styles.logo} onClick={this.mathRodom.bind(this)} source={{
+      uri: '//gw.alicdn.com/tfs/TB1MRC_cvb2gK0jSZK9XXaEgFXa-1701-1535.png'
+    }} /><text>
+            hello world
+            </text><View><text>{count}</text></View>
           </View></template>`);
   });
 });

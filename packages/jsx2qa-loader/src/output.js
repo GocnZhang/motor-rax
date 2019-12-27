@@ -84,20 +84,19 @@ function output(content, raw, options) {
       code = addSourceMap(code, raw, map);
     }
   }
-
   // Write file
   writeFileWithDirCheck(outputPath.code, code);
 
   // Write ux components
-  if (renderItems && renderItems.length) {
-    const renderItemRoot = outputPath.template.split('/').slice(0, -1).join('/');
-    for (let i in renderItems) {
-      const item = renderItems[i];
-      Object.keys(item).forEach(fileName => {
-        writeFileSync(`${renderItemRoot}/${fileName}.ux`, item[fileName]);
-      });
-    }
-  }
+  // if (renderItems && renderItems.length) {
+  //   const renderItemRoot = outputPath.template.split('/').slice(0, -1).join('/');
+  //   for (let i in renderItems) {
+  //     const item = renderItems[i];
+  //     Object.keys(item).forEach(fileName => {
+  //       writeFileSync(`${renderItemRoot}/${fileName}.ux`, item[fileName]);
+  //     });
+  //   }
+  // }
   if (json) {
     writeFileWithDirCheck(outputPath.json, json, 'json');
   }
@@ -116,8 +115,17 @@ function output(content, raw, options) {
     writeFileWithDirCheck(outputPath.template, uxTxt);
   }
   if (css) {
-    // 修改rpx为px
-    writeFileWithDirCheck(outputPath.css, css.replace(/rpx/g, 'px'));
+    // 添加默认样式，并修改rpx为px
+    writeFileWithDirCheck(outputPath.css, `
+.__rax-view {
+  border: 0 solid black;
+  display:flex;
+  flex-direction:column;
+  align-content:flex-start;
+  flex-shrink:0;
+  box-sizing:border-box;
+}
+${css.replace(/rpx/g, 'px')}`);
   }
   if (config) {
     writeFileWithDirCheck(outputPath.config, config);
@@ -128,6 +136,8 @@ function output(content, raw, options) {
     Object.keys(assets).forEach((asset) => {
       const ext = extname(asset);
       let content = assets[asset];
+      // css in js 生成的js文件中的rpx单位转化
+      content = content.replace(/rpx/g, 'px');
       if (mode === 'build') {
         content = minify(content, ext);
       }

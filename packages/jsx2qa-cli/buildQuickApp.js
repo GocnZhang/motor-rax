@@ -39,6 +39,9 @@ function generateQuickAppManifest (options) {
     quickappJSON.router = router;
     quickappJSON.display = display;
 
+    // 合并app.json里的config
+    Object.assign(quickappJSON, appConfig.config)
+
     fs.writeFileSync(path.join(distDirectory, '/src/manifest.json'), JSON.stringify(quickappJSON, null, 2))
   }
 

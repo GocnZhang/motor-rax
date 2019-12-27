@@ -11,5 +11,8 @@
   ],
   "window": {
     "defaultTitle": "Rax App 1.0"
+  },
+  "config": {
+    "package": "hello demo"
   }
 }

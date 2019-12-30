@@ -52,7 +52,7 @@ export function getPageLifecycle({ mount, unmount, show, hide }) {
 
 export function getComponentBaseConfig() {
   return {
-    props: {},
+    props: ['tagId', 'parentId'],
   };
 }
 

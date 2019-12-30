@@ -7,6 +7,9 @@ let _customId = 0;
 export default function getId(type, internal) {
   switch (type) {
     case 'tag':
+      if (internal['tagId']) {
+        return internal['tagId'];
+      }
       return internal["_attrs"]["tagId"] === undefined ? "t_" + _customId++ : internal["_attrs"]["tagId"];
 
     case 'parent':

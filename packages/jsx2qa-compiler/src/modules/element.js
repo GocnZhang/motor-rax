@@ -158,12 +158,12 @@ function transformTemplate(
       case 'Identifier':
         if (type === ATTR) {
           // <view for={(item, index) in list} />
-          const forParams = isForList(path);
-          const matchName = matchForList(expression, forParams);
-          if (forParams && matchName) {
-            path.replaceWith(t.stringLiteral(createBinding(matchName)));
-            break;
-          }
+          // const forParams = isForList(path);
+          // const matchName = matchForList(expression, forParams);
+          // if (forParams && matchName) {
+          //   path.replaceWith(t.stringLiteral(createBinding(matchName)));
+          //   break;
+          // }
           // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
           const openNodeName = parentPath.parentPath.node.name.name;
           const nativeRaxComponent = /rax-/g.test(openNodeName);
@@ -188,12 +188,12 @@ function transformTemplate(
           }
         } else if (type === ELE) {
           // <view for={(item, index) in list} />
-          const forParams = isForList(path);
-          const matchName = matchForList(expression, forParams);
-          if (forParams && matchName) {
-            path.replaceWith(createJSXBinding(matchName));
-            break;
-          }
+          // const forParams = isForList(path);
+          // const matchName = matchForList(expression, forParams);
+          // if (forParams && matchName) {
+          //   path.replaceWith(createJSXBinding(matchName));
+          //   break;
+          // }
           if (expression.name === 'undefined') {
             path.remove(); // Remove expression
             break;
@@ -268,12 +268,12 @@ function transformTemplate(
       case 'MemberExpression':
         if (type === ATTR) {
           // <view for={(item, index) in list} />
-          const forParams = isForList(path);
-          const matchName = matchForList(expression, forParams);
-          if (forParams && matchName) {
-            path.replaceWith(t.stringLiteral(createBinding(matchName)));
-            break;
-          }
+          // const forParams = isForList(path);
+          // const matchName = matchForList(expression, forParams);
+          // if (forParams && matchName) {
+          //   path.replaceWith(t.stringLiteral(createBinding(matchName)));
+          //   break;
+          // }
           // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
           const openNodeName = parentPath.parentPath.node.name.name;
           const nativeRaxComponent = /rax-/g.test(openNodeName);
@@ -310,12 +310,12 @@ function transformTemplate(
             break;
           }
           // <view for={(item, index) in list} />
-          const forParams = isForList(path);
-          const matchName = matchForList(expression, forParams);
-          if (forParams && matchName) {
-            path.replaceWith(createJSXBinding(matchName));
-            break;
-          }
+          // const forParams = isForList(path);
+          // const matchName = matchForList(expression, forParams);
+          // if (forParams && matchName) {
+          //   path.replaceWith(createJSXBinding(matchName));
+          //   break;
+          // }
           const replaceNode = transformMemberExpression(
             expression,
             dynamicValues,

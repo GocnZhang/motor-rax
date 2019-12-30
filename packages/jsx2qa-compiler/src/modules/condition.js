@@ -69,7 +69,7 @@ function transformRenderFunction(ast, adapter, code) {
             const varName = expression.left.name;
             if (!templateVariables[varName].value) {
               templateVariables[expression.left.name].value = createJSX(
-                'block',
+                'span',
               );
             }
             let testAttrName = adapter.if;
@@ -90,7 +90,7 @@ function transformRenderFunction(ast, adapter, code) {
             const rightNode = expression.right;
             if (t.isJSXElement(rightNode)) {
               const containerNode = createJSX(
-                'block',
+                'span',
                 {
                   [testAttrName]: t.stringLiteral(
                     '{{' + testValue + '}}',
@@ -119,7 +119,7 @@ function transformRenderFunction(ast, adapter, code) {
               const rightNode = expression.right;
               if (t.isJSXElement(rightNode)) {
                 const containerNode = createJSX(
-                  'block',
+                  'span',
                   {
                     [adapter.else]: null,
                   },
@@ -166,7 +166,7 @@ function transformTemplate(ast, adapter, templateVariables, code) {
             templateVariables[id] &&
             t.isJSXElement(templateVariables[id].value)
           ) {
-            // => <block a:if="xxx">
+            // => <span a:if="xxx">
             path.replaceWith(templateVariables[id].value);
           }
 
@@ -201,11 +201,11 @@ function transformTemplate(ast, adapter, templateVariables, code) {
           } else {
             children.push(t.jsxExpressionContainer(right));
           }
-          replacement.push(createJSX('block', {
+          replacement.push(createJSX('span', {
             [adapter.if]: generateConditionValue(test, {adapter, dynamicValue})
           }, children));
           if (!/Expression$/.test(left.type)) {
-            replacement.push(createJSX('block', {
+            replacement.push(createJSX('span', {
               [adapter.else]: null,
             }, [t.jsxExpressionContainer(left)]));
           } else {
@@ -277,7 +277,7 @@ function transformConditionalExpression(path, expression, options) {
   if (consequentReplacement.length > 0) {
     replacement.push(
       createJSX(
-        'block',
+        'span',
         {
           [options.adapter.if]: generateConditionValue(test, options),
         },
@@ -288,7 +288,7 @@ function transformConditionalExpression(path, expression, options) {
   if (alternateReplacement.length > 0) {
     replacement.push(
       createJSX(
-        'block',
+        'span',
         {
           [options.adapter.else]: null,
         },

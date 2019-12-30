@@ -5,7 +5,7 @@ const createJSX = require('../utils/createJSX');
 const genExpression = require('../codegen/genExpression');
 const findIndex = require('../utils/findIndex');
 
-function transformList(ast, renderItemFunctions, adapter, code) {
+function transformList(ast, renderItemFunctions, adapter) {
   let fnScope;
   let useCreateStyle = false;
 
@@ -69,8 +69,9 @@ function transformList(ast, renderItemFunctions, adapter, code) {
                   ) {
                     innerPath.node.__listItem = {
                       jsxplus: false,
-                      item: null
+                      item: forItem.name
                     };
+
                     // Skip duplicate keys.
                     if (!properties.some(
                       pty => pty.key.name === innerPath.node.name)) {
@@ -99,13 +100,9 @@ function transformList(ast, renderItemFunctions, adapter, code) {
                   }
                 }
               });
+
               const listBlock = createJSX('block', {
-                [adapter.for]: t.jsxExpressionContainer(
-                  t.binaryExpression('in', 
-                    t.sequenceExpression([ t.identifier(forItem.name), t.identifier(forIndex.name) ]), 
-                    callee.object
-                  )
-                ),
+                [adapter.for]: t.jsxExpressionContainer(node),
               }, [returnElPath.node]);
 
               // Mark jsx list meta for generate by code.
@@ -116,7 +113,6 @@ function transformList(ast, renderItemFunctions, adapter, code) {
                 jsxplus: false,
                 loopFnBody: body
               };
-
 
               parentPath.replaceWith(listBlock);
               parentPath._forParams = {
@@ -139,8 +135,7 @@ function transformList(ast, renderItemFunctions, adapter, code) {
 
 module.exports = {
   parse(parsed, code, options) {
-    
-    const useCreateStyle = transformList(parsed.templateAST, parsed.renderItemFunctions, options.adapter, code);
+    const useCreateStyle = transformList(parsed.templateAST, parsed.renderItemFunctions, options.adapter);
     // In list item maybe use __create_style__
     if (!parsed.useCreateStyle) {
       parsed.useCreateStyle = useCreateStyle;

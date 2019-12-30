@@ -274,7 +274,6 @@ function transformTemplate(
             path.replaceWith(t.stringLiteral(createBinding(matchName)));
             break;
           }
-          console.log('继续进else', matchName);
           // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
           const openNodeName = parentPath.parentPath.node.name.name;
           const nativeRaxComponent = /rax-/g.test(openNodeName);
@@ -384,17 +383,21 @@ function transformTemplate(
                 }
               });
             }
-
             path.replaceWith(t.stringLiteral(name));
           } else {
             // todo
             if(!expression.callee.property || expression.callee.property !== 'map') {
-              const name = dynamicValues.add({
+              let name = dynamicValues.add({
                 expression,
                 isDirective,
               });
+              const forParams = isForList(path)
+              if(forParams) {
+                name = `(${forParams.forIndex}, ${forParams.forItem}) in ${name}`
+              }
               path.replaceWith(t.stringLiteral(createBinding(name)));
             }
+           
           }
         } else if (type === ELE) {
           // Skip `array.map(iterableFunction)`.
@@ -424,16 +427,6 @@ function transformTemplate(
           else if (type === ELE)
             path.replaceWith(createJSXBinding(expressionName));
         
-        } else if (isForList(path)) {
-          // <view for={(item, index) in list} />
-          if (type === ATTR) {
-            const expressionName = dynamicValues.add({
-              expression: expression.right,
-              isDirective,
-            });
-            const left = expression.left.expressions.reverse().map((v) => v.name).join(',');
-            path.replaceWith(t.stringLiteral(`(${left}) in ${expressionName}`));
-          }
         } else {
           path.traverse({
             Identifier(innerPath) {
@@ -479,10 +472,6 @@ function transformTemplate(
           });
 
           if (type === ATTR) {
-            console.log(111, createBinding(genExpression(expression, {
-              concise: true,
-              comments: false,
-            })))
             path.replaceWith(
               t.stringLiteral(
                 createBinding(

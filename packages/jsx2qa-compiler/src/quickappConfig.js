@@ -54,6 +54,7 @@ module.exports = function(rawContent, options = {}) {
         path.node.source = getRealSource(pkgName, npmRelativePath, rootContext);
       }
     }
+    
   })
   return {
     isQaConfigModules: result,

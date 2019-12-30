@@ -7,6 +7,9 @@ const { removeExt, isFromTargetDirs } = require('./utils/pathHelper');
 const { isNpmModule } = require('./utils/judgeModule');
 const output = require('./output');
 
+const { writeFile } = require('fs')
+const { quickAppConfig } = require('@ali/jsx2qa-compiler');
+
 const AppLoader = require.resolve('./app-loader');
 const PageLoader = require.resolve('./page-loader');
 const ComponentLoader = require.resolve('./component-loader');
@@ -152,6 +155,18 @@ module.exports = function scriptLoader(content) {
     const distSourceDirPath = dirname(distSourcePath);
 
     if (!existsSync(distSourceDirPath)) mkdirpSync(distSourceDirPath);
+    const { isFormNodeModules, code } = quickAppConfig(rawContent, {
+      resourcePath: this.resourcePath,
+      outputPath,
+      sourcePath,
+      rootContext
+    })
+    if(isFormNodeModules) {
+      writeFile(distSourcePath, code, (err) => {
+        console.log('err', err);
+      })
+      return '';
+    }
     const outputContent = { code: rawContent };
     const outputOption = {
       outputPath: {

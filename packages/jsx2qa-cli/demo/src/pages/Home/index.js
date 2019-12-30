@@ -6,7 +6,9 @@ import C from '../../components/component';
 import D from '../../components/functionalComponent';
 // import Utils from '@ali/motor-universal-utils';
 import './index.css';
-// import { getCacheCityInfo } from '@ali/motor-universal-utils';
+import { age } from './const';
+import { name } from '../../utils';
+import { getCacheCityInfo } from '@ali/motor-universal-utils';
 
 export default class Home extends Component {
   state = {
@@ -42,13 +44,13 @@ export default class Home extends Component {
   // componentWillMount() {
   //   this.setState({componentWillMounted: true});
   // }
-  // componentDidMount() {
-  //   this.setState({componentDidMounted: true});
-  //   console.log('componentDidMount')
-  //   getCacheCityInfo().then(res => {
-  //     console.log('getCacheCityInfo', res)
-  //   })
-  // }
+  componentDidMount() {
+    this.setState({componentDidMounted: true});
+    console.log('componentDidMount')
+    getCacheCityInfo().then(res => {
+      console.log('getCacheCityInfo', res)
+    })
+  }
   // componentWillUnmount() {
   //   console.log('unmount excuted');
   // }
@@ -74,6 +76,8 @@ export default class Home extends Component {
     } = this.state;
     return (
       <View class="demo-wrap">
+        {name}
+        {age}
         {/* <View class="demo-block">
           <View><Text class="demo-title">生命周期验证</Text></View>
           <View onClick={this.update}><Text style="color: blue;">点我update</Text></View>
@@ -121,9 +125,9 @@ export default class Home extends Component {
             return <View>{v}-{index}</View>
           })} */}
           <View><text class="demo-subtitle">x-for</text></View>
-          <View x-for={(v, index) in list}>
+          {/* <View x-for={(v, index) in list}>
             <C text={v} />
-          </View>
+          </View> */}
           {/* <View><text class="demo-subtitle">3.x-class</text></View>
           <View x-class={{ 'demo-content': true, 'margin-bigger': count.num === 2 }}>
             count num 等于2, 左间距会变大

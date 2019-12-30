@@ -18,7 +18,7 @@ module.exports = [
   // Handle Rax base components.
   require('./components'),
   // JSX+ Directives
-  require('./jsx-plus'),
+  require('./jsx-plusnew'),
   // Directive a:for
   require('./list'),
   // Directive a:if

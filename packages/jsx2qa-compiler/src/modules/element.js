@@ -157,6 +157,13 @@ function transformTemplate(
       // <div>{bar}</div>  -> <div>{{ bar }}</div>
       case 'Identifier':
         if (type === ATTR) {
+          // <view for={(item, index) in list} />
+          const forParams = isForList(path);
+          const matchName = matchForList(expression, forParams);
+          if (forParams && matchName) {
+            path.replaceWith(t.stringLiteral(createBinding(matchName)));
+            break;
+          }
           // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
           const openNodeName = parentPath.parentPath.node.name.name;
           const nativeRaxComponent = /rax-/g.test(openNodeName);
@@ -260,6 +267,14 @@ function transformTemplate(
       // <tag>{ foo.bar }</tag> => <tag>{{ _d0.bar }}</tag>
       case 'MemberExpression':
         if (type === ATTR) {
+          // <view for={(item, index) in list} />
+          const forParams = isForList(path);
+          const matchName = matchForList(expression, forParams);
+          if (forParams && matchName) {
+            path.replaceWith(t.stringLiteral(createBinding(matchName)));
+            break;
+          }
+          console.log('继续进else', matchName);
           // <motor-rax-text onClick={handleClick}/> => <motor-rax-text onClick="{{d0}}"/>
           const openNodeName = parentPath.parentPath.node.name.name;
           const nativeRaxComponent = /rax-/g.test(openNodeName);
@@ -422,6 +437,7 @@ function transformTemplate(
         } else {
           path.traverse({
             Identifier(innerPath) {
+              
               if (
                 innerPath.node.__transformed ||
                 innerPath.parentPath.isMemberExpression() ||
@@ -462,7 +478,11 @@ function transformTemplate(
             },
           });
 
-          if (type === ATTR)
+          if (type === ATTR) {
+            console.log(111, createBinding(genExpression(expression, {
+              concise: true,
+              comments: false,
+            })))
             path.replaceWith(
               t.stringLiteral(
                 createBinding(
@@ -473,8 +493,9 @@ function transformTemplate(
                 ),
               ),
             );
-          else if (type === ELE)
+          } else if (type === ELE) {
             path.replaceWith(createJSXBinding(genExpression(expression)));
+          }  
         }
         break;
       default: {
@@ -691,14 +712,17 @@ function isForList(path) {
 function matchForList(expression, forParams) {
   const { forItem, forIndex, forList } = forParams;
   let name = null;
+  let type = 'Identifier';
   if(t.isIdentifier(expression)) {
     name = expression.name
+    type = 'Identifier';
   }
   if(t.isMemberExpression(expression)) {
     name = expression.object.name
+    type = 'MemberExpression';
   }
   if(name === forItem || name === forIndex || name === forList) {
-    return name;
+    return type === 'Identifier' ? name : genExpression(expression);
   }
 }
 

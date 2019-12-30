@@ -11,6 +11,7 @@ const { normalizeFileName } = require('./utils/pathHelper');
 // const basedComponents = require('../baseComponents');
 
 module.exports = function(rawContent, options = {}) {
+  let result = false;
   const getRealSource = (value, prefix, rootContext) => {
     const npmName = getNpmName(value);
     const nodeModulePath = join(rootContext, 'node_modules');
@@ -27,6 +28,7 @@ module.exports = function(rawContent, options = {}) {
     const packageJSON = readJSONSync(packageJSONPath);
     const moduleBasePath = join(packageJSONPath, '..');
     if(packageJSON.quickappConfig) {
+      result = true;
       target = join(moduleBasePath, packageJSON.quickappConfig.main)
     }
     const realNpmName = relative(nodeModulePath, moduleBasePath);
@@ -39,13 +41,11 @@ module.exports = function(rawContent, options = {}) {
   };
   const { outputPath, resourcePath, sourcePath, rootContext } = options;
   const ast = parseCode(rawContent);
-  let result = false;
   traverse(ast, {
     ImportDeclaration(path) {
       const { source } = path.node;
       let pkgName = source.value;
       if(!/^.\//.test(pkgName)) {
-        result = true;
         const targetFileDir = dirname(join(outputPath, relative(sourcePath, resourcePath)));
         let npmRelativePath = relative(targetFileDir, join(outputPath, '/npm'));
         npmRelativePath = npmRelativePath[0] !== '.' ? './' + npmRelativePath : npmRelativePath;
@@ -56,7 +56,7 @@ module.exports = function(rawContent, options = {}) {
     }
   })
   return {
-    isFormNodeModules: result,
+    isQaConfigModules: result,
     code: genCode(ast).code
   }
   

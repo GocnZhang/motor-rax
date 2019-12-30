@@ -33,6 +33,7 @@ module.exports = function scriptLoader(content) {
   const currentNodeModulePath = nodeModulesPathList[nodeModulesPathList.length - 1];
   const rootNodeModulePath = join(rootContext, 'node_modules');
   const outputPath = this._compiler.outputPath;
+  const sourcePath = join(rootContext, dirname(entryPath));
   const relativeResourcePath = relative(rootContext, this.resourcePath);
 
   const isFromNodeModule = cached(function isFromNodeModule(path) {
@@ -155,13 +156,13 @@ module.exports = function scriptLoader(content) {
     const distSourceDirPath = dirname(distSourcePath);
 
     if (!existsSync(distSourceDirPath)) mkdirpSync(distSourceDirPath);
-    const { isFormNodeModules, code } = quickAppConfig(rawContent, {
+    const { isQaConfigModules, code } = quickAppConfig(rawContent, {
       resourcePath: this.resourcePath,
       outputPath,
       sourcePath,
       rootContext
     })
-    if(isFormNodeModules) {
+    if(isQaConfigModules) {
       writeFile(distSourcePath, code, (err) => {
         console.log('err', err);
       })

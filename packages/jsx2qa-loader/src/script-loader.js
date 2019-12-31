@@ -162,12 +162,6 @@ module.exports = function scriptLoader(content) {
       sourcePath,
       rootContext
     })
-    if(isQaConfigModules) {
-      writeFile(distSourcePath, code, (err) => {
-        console.log('err', err);
-      })
-      return '';
-    }
     const outputContent = { code: rawContent };
     const outputOption = {
       outputPath: {
@@ -190,6 +184,11 @@ module.exports = function scriptLoader(content) {
     };
 
     output(outputContent, null, outputOption);
+    if(isQaConfigModules) {
+      writeFile(distSourcePath, code, (err) => {
+        console.log('err', err);
+      })
+    }
   }
 
   return content;

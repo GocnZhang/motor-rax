@@ -45,7 +45,7 @@ module.exports = function(rawContent, options = {}) {
     ImportDeclaration(path) {
       const { source } = path.node;
       let pkgName = source.value;
-      if(!/^(.)+\//.test(pkgName)) {
+      if(pkgName.indexOf('./') === -1) {
         const targetFileDir = dirname(join(outputPath, relative(sourcePath, resourcePath)));
         let npmRelativePath = relative(targetFileDir, join(outputPath, '/npm'));
         npmRelativePath = npmRelativePath[0] !== '.' ? './' + npmRelativePath : npmRelativePath;

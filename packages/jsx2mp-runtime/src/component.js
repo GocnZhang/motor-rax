@@ -18,6 +18,8 @@ import {
   ON_SHARE_APP_MESSAGE,
   ON_TAB_ITEM_TAP,
   ON_TITLE_CLICK,
+  ON_BACK_PRESS,
+  ON_MENU_PRESS,
   COMPONENT_DID_MOUNT,
   COMPONENT_DID_UPDATE,
   COMPONENT_WILL_MOUNT,
@@ -274,6 +276,8 @@ export default class Component {
       case ON_TAB_ITEM_TAP:
       case ON_TITLE_CLICK:
       case ON_PULL_DOWN_REFRESH:
+      case ON_BACK_PRESS:
+      case ON_MENU_PRESS:
         if (isFunction(this[cycle])) this[cycle](...args);
         if (this._cycles.hasOwnProperty(cycle)) {
           this._cycles[cycle].forEach(fn => fn(...args));

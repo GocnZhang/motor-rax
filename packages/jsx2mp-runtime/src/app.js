@@ -1,4 +1,4 @@
-const LAUNCH = 'launch';
+const LAUNCH = 'onCreate';
 
 export const cycles = {};
 

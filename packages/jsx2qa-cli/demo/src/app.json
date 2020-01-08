@@ -13,6 +13,20 @@
     "defaultTitle": "Rax App 1.0"
   },
   "config": {
-    "package": "hello demo"
+    "package": "hello demo",
+    "display": {
+      "titleBarBackgroundColor": "#f2f2f2",
+      "titleBarTextColor": "#414141",
+      "menu": true,
+      "pages": {
+        "pages/Home": {
+          "titleBarText": "首页",
+          "menu": false
+        },
+        "pages/HomeFunc": {
+          "titleBarText": "详情页"
+        }
+      }
+    }
   }
 }

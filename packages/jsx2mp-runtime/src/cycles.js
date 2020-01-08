@@ -13,3 +13,5 @@ export const ON_REACH_BOTTOM = 'onReachBottom';
 export const ON_PULL_DOWN_REFRESH = 'onPullDownRefresh';
 export const ON_TAB_ITEM_TAP = 'onTabItemTap';
 export const ON_TITLE_CLICK = 'onTitleClick';
+export const ON_BACK_PRESS = 'onBackPress';
+export const ON_MENU_PRESS = 'onMenuPress';

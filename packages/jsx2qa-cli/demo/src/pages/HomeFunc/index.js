@@ -1,32 +1,48 @@
-import { render, useState, useEffect } from 'rax';
-import { usePageShow, usePageHide } from 'rax-app';
+import { render, useState, useEffect, createContext } from 'rax';
+import { usePageShow, usePageHide, useLayoutEffect, useBackPress, useMenuPress } from 'rax-app';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
 import C from '../../components/component';
 import D from '../../components/functionalComponent';
+// import ShowArea from "../../components/showarea";
+// import Buttons from "../../components/button";
+// import Color from "../../components/color";
 import './index.css';
 
+const colorContext = createContext({});
 export default function Index() {
-  const [count, setCount] = useState(0);
-  const [list, setList] = useState([1,2,3]);
-  function onCountClick() {
-    setCount(count+1)
-  }
-  useEffect(() => {
-    console.log('useEffect excuted');
-    setCount(99)
-  }, ['count']);
+  // const [count, setCount] = useState(0);
+  // const [list, setList] = useState([1,2,3]);
+  // function onCountClick() {
+  //   setCount(count+1)
+  // }
+  // useLayoutEffect(() => {
+  //   console.log('useEffect excuted');
+  //   setCount(99)
+  // }, ['count']);
 
-  usePageShow(() => {
-    console.log('usePageShow excuted');
+  // usePageShow(() => {
+  //   console.log('usePageShow excuted');
+  // })
+
+  // usePageShow(() => {
+  //   console.log('usePageShow excuted11111111');
+  // })
+
+  // usePageHide(() => {
+  //   console.log('usePageHide excuted');
+  // })
+
+  useBackPress(() => {
+    console.log('useBackPress excuted')
   })
 
-  usePageHide(() => {
-    console.log('usePageHide excuted');
+  useMenuPress(() => {
+    console.log('useBackPress excuted')
   })
 
   return <View class="demo-wrap">
-      <View><Text class="demo-title">functional component page</Text></View>
+      {/* <View><Text class="demo-title">functional component page</Text></View>
       <View class="demo-block">
         <View><Text class="demo-title">样式测试</Text></View>
         <View><text class="demo-subtitle" style="color: red">1.内联字符串</text></View>
@@ -50,7 +66,10 @@ export default function Index() {
       </View>
 
       <span onclick={onCountClick}>xxxxxxx点我</span>
-      {count}
-
+      {count} */}
+      {/* <Color colorContext={colorContext}>
+        <Buttons />
+        <ShowArea></ShowArea> 
+      </Color> */}
     </View>
 }

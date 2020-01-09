@@ -1,6 +1,6 @@
 {
   "name": "@ali/jsx2qa-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "BSD-3-Clause",
   "description": "A cli tool to transform Rax JSX based project to quickapp.",
   "bin": {
@@ -20,8 +20,8 @@
   },
   "author": "Rax Team",
   "dependencies": {
-    "@ali/jsx2qa-loader": "../jsx2qa-loader",
-    "@ali/motor-jsx2mp-runtime-x": "../jsx2mp-runtime",
+    "@ali/jsx2qa-loader": "^1.0.0",
+    "@ali/motor-jsx2mp-runtime-x": "^1.0.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",

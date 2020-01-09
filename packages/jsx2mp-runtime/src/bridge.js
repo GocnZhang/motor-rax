@@ -187,29 +187,40 @@ function createConfig(component, options) {
  * @param pageProps
  */
 export function runApp(appConfig, pageProps = {}) {
+  if (pageProps === void 0) {
+    pageProps = {};
+  }
+
+  if (pageProps === void 0) {
+    pageProps = {};
+  }
+
   if (_appConfig) {
     throw new Error('runApp can only be called once.');
   }
 
   _appConfig = appConfig; // Store raw app config to parse router.
-  _pageProps = pageProps; // Store global page props to inject to every page props
-  __updateRouterMap(appConfig);
 
-  const appOptions = {
+  _pageProps = pageProps; // Store global page props to inject to every page props
+
+  var _onCreate = appConfig.onCreate;
+  var appOptions = Object.assign({}, appConfig, {
     // Bridge app launch.
-    onLaunch(launchOptions) {
-      const launchQueue = appCycles.launch;
+    onCreate: function onCreate(launchOptions) {
+      var launchQueue = appCycles.create;
+      _onCreate && _onCreate();
       if (Array.isArray(launchQueue) && launchQueue.length > 0) {
-        let fn;
-        while (fn = launchQueue.pop()) { // eslint-disable-line
+        var fn;
+
+        while (fn = launchQueue.pop()) {
+          // eslint-disable-line
           fn.call(this, launchOptions);
         }
       }
-    },
-  };
+    }
+  }); // eslint-disable-next-line
 
-  // eslint-disable-next-line
-  App(appOptions);
+  return appOptions;
 }
 
 export function createPage(definition, options = {}) {

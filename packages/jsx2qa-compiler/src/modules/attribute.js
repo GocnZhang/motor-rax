@@ -27,7 +27,7 @@ function transformAttribute(ast, code, adapter) {
           } 
           break;
         case 'style':
-          if (adapter.styleKeyword && /(c)?-/g.test(parentPath.node.name.name)) {
+          if (adapter.styleKeyword && /(c)?-/g.test(parentPath.node.name.name) && parentPath.node.name.name !== 'rax-view') {
             node.name.name = 'style-sheet';
           }
           break;

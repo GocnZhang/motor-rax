@@ -87,14 +87,14 @@ module.exports = async function appLoader(content) {
   };
   const outputOption = {
     outputPath: {
-      code: join(outputPath, 'app.js'),
+      code: join(outputPath, 'app.ux'),
       json: join(outputPath, 'app.json'),
       css: join(outputPath, 'app' + platform.extension.css),
       config: join(outputPath, 'app.config.js')
     },
-    mode
+    mode,
+    type: 'app'
   };
-
   output(outputContent, rawContent, outputOption);
 
   return [

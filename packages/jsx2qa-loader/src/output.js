@@ -54,7 +54,7 @@ function transformCode(rawContent, mode, externalPlugins = [], externalPreset = 
  * @param {object} options
  */
 function output(content, raw, options) {
-  const { mode, outputPath, externalPlugins = [] } = options;
+  const { mode, outputPath, externalPlugins = [], type } = options;
   let { code, config, json, css, map, template, assets, renderItems = [], importComponents = [] } = content;
   if (mode === 'build') {
     // Compile ES6 => ES5 and minify code
@@ -83,6 +83,9 @@ function output(content, raw, options) {
     if (map) {
       code = addSourceMap(code, raw, map);
     }
+  }
+  if(type === 'app') {
+    code = `<script>\n${code}\n</script>\n`;
   }
   // Write file
   writeFileWithDirCheck(outputPath.code, code);

@@ -69,7 +69,7 @@ function transformRenderFunction(ast, adapter, code) {
             const varName = expression.left.name;
             if (!templateVariables[varName].value) {
               templateVariables[expression.left.name].value = createJSX(
-                'span',
+                'block',
               );
             }
             let testAttrName = adapter.if;
@@ -90,7 +90,7 @@ function transformRenderFunction(ast, adapter, code) {
             const rightNode = expression.right;
             if (t.isJSXElement(rightNode)) {
               const containerNode = createJSX(
-                'span',
+                'block',
                 {
                   [testAttrName]: t.stringLiteral(
                     '{{' + testValue + '}}',
@@ -119,13 +119,12 @@ function transformRenderFunction(ast, adapter, code) {
               const rightNode = expression.right;
               if (t.isJSXElement(rightNode)) {
                 const containerNode = createJSX(
-                  'span',
+                  'block',
                   {
                     [adapter.else]: null,
                   },
                   [rightNode],
                 );
-
                 if (templateVariables[varName].value) {
                   templateVariables[varName].value.children.push(containerNode);
                 } else {
@@ -156,6 +155,7 @@ function transformTemplate(ast, adapter, templateVariables, code) {
         case 'ConditionalExpression': {
           const { replacement } = transformConditionalExpression(path, node.expression, { adapter, dynamicValue, code });
           path.replaceWithMultiple(replacement);
+          path.condition = true;
           break;
         }
 
@@ -166,7 +166,7 @@ function transformTemplate(ast, adapter, templateVariables, code) {
             templateVariables[id] &&
             t.isJSXElement(templateVariables[id].value)
           ) {
-            // => <span a:if="xxx">
+            // => <block a:if="xxx">
             path.replaceWith(templateVariables[id].value);
           }
 
@@ -201,11 +201,11 @@ function transformTemplate(ast, adapter, templateVariables, code) {
           } else {
             children.push(t.jsxExpressionContainer(right));
           }
-          replacement.push(createJSX('span', {
+          replacement.push(createJSX('block', {
             [adapter.if]: generateConditionValue(test, {adapter, dynamicValue})
           }, children));
           if (!/Expression$/.test(left.type)) {
-            replacement.push(createJSX('span', {
+            replacement.push(createJSX('block', {
               [adapter.else]: null,
             }, [t.jsxExpressionContainer(left)]));
           } else {
@@ -233,10 +233,16 @@ function transformTemplate(ast, adapter, templateVariables, code) {
  * */
 function transformConditionalExpression(path, expression, options) {
   let { test, consequent, alternate } = expression;
+  const { parentPath } = path;
 
   const replacement = [];
   let consequentReplacement = [];
   let alternateReplacement = [];
+
+  let openTag = 'block';
+  if(t.isJSXElement(parentPath) && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'Text' })){
+    openTag = 'span'
+  }
 
   if (t.isExpression(consequent)) {
     if (t.isConditionalExpression(consequent)) {
@@ -277,7 +283,7 @@ function transformConditionalExpression(path, expression, options) {
   if (consequentReplacement.length > 0) {
     replacement.push(
       createJSX(
-        'span',
+        openTag,
         {
           [options.adapter.if]: generateConditionValue(test, options),
         },
@@ -288,7 +294,7 @@ function transformConditionalExpression(path, expression, options) {
   if (alternateReplacement.length > 0) {
     replacement.push(
       createJSX(
-        'span',
+        openTag,
         {
           [options.adapter.else]: null,
         },

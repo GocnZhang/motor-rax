@@ -11,6 +11,8 @@ module.exports = [
   require('./code'),
   // Handle template attrs
   require('./element'),
+  // Handle template tag,
+  require('./tag'),
   // Handle jsx attribute
   require('./attribute'),
   // Handle template style attr

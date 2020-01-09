@@ -65,6 +65,7 @@ module.exports = {
 
     if (type === 'app') {
       userDefineType = 'function';
+      addExportDefault(ast);
     } else if (isFunctionComponent(defaultExportedPath)) { // replace with class def.
       userDefineType = 'function';
       const { id, generator, async, body, params } = defaultExportedPath.node;
@@ -173,6 +174,21 @@ module.exports = {
     }
   },
 };
+
+function addExportDefault(ast) {
+  traverse(ast, {
+    ExpressionStatement(path) {
+      const { expression } = path.node;
+      const { callee } = expression;
+      if (t.isCallExpression(expression) && t.isIdentifier(callee) && callee.name === 'runApp') {
+        path.replaceWith(
+          t.exportDefaultDeclaration(
+            expression
+          ))
+      }
+    }
+  })
+}
 
 function genTagIdExp(expressions) {
   let ret = '';

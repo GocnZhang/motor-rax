@@ -4,6 +4,7 @@ import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
 import C from '../../components/component';
 import D from '../../components/functionalComponent';
+import Demo from '../../components/slot';
 // import ShowArea from "../../components/showarea";
 // import Buttons from "../../components/button";
 // import Color from "../../components/color";
@@ -11,7 +12,7 @@ import './index.css';
 
 const colorContext = createContext({});
 export default function Index() {
-  // const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0);
   // const [list, setList] = useState([1,2,3]);
   // function onCountClick() {
   //   setCount(count+1)
@@ -41,7 +42,12 @@ export default function Index() {
     console.log('useBackPress excuted')
   })
 
+  function setCountFunc() {
+    setCount(1);
+  }
+
   return <View class="demo-wrap">
+      <text onClick={setCountFunc}>点我试试</text>
       {/* <View><Text class="demo-title">functional component page</Text></View>
       <View class="demo-block">
         <View><Text class="demo-title">样式测试</Text></View>
@@ -71,5 +77,8 @@ export default function Index() {
         <Buttons />
         <ShowArea></ShowArea> 
       </Color> */}
+      <Demo>
+        <View x-memo>123{count}</View>
+      </Demo>
     </View>
 }

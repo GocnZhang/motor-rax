@@ -55,7 +55,7 @@ function getConstructor(type) {
  */
 module.exports = {
   parse(parsed, code, options) {
-    const { defaultExportedPath, eventHandlers = [] } = parsed;
+    const { defaultExportedPath, eventHandlers = [], ast } = parsed;
     const { platform, type, cwd, outputPath, sourcePath, resourcePath, disableCopyNpm } = options;
     if (type !== 'app' && (!defaultExportedPath || !defaultExportedPath.node)) {
       // Can not found default export, otherwise app.js is excluded.

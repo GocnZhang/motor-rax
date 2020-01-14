@@ -164,24 +164,9 @@ export function useImperativeHandle(ref, create, inputs) {
   }, nextInputs);
 }
 
-export function useRef(initialValue) {
-  const currentInstance = getCurrentRenderingInstance();
-  const hookID = currentInstance.getHookID();
-  const hooks = currentInstance.getHooks();
-
-  if (!hooks[hookID]) {
-    const ref = {
-      current: initialValue
-    };
-    const refFn = (instance) => {
-      ref.current = instance;
-    };
-    refFn.__proto__ = ref;
-    // currentInstance._internal.,
-    hooks[hookID] = refFn;
-  }
-
-  return hooks[hookID];
+export function useRef(initialValue, name) {
+  var currentInstance = getCurrentRenderingInstance();
+  return currentInstance._internal.$element(name) || {}
 }
 
 export function useCallback(callback, inputs) {

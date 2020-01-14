@@ -1,4 +1,4 @@
-import { render, useState, useEffect, createContext } from 'rax';
+import { render, useState, useEffect, createContext, useRef } from 'rax';
 import { usePageShow, usePageHide, useLayoutEffect, useBackPress, useMenuPress } from 'rax-app';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
@@ -13,6 +13,12 @@ import './index.css';
 const colorContext = createContext({});
 export default function Index() {
   const [count, setCount] = useState(0);
+  const inputEl = useRef(null, 'inputEl');
+  const onButtonClick = () => {
+    // `current` points to the mounted text input element
+    // inputEl.current.focus();
+    console.log('inputEl', inputEl);
+  };
   // const [list, setList] = useState([1,2,3]);
   // function onCountClick() {
   //   setCount(count+1)
@@ -48,6 +54,8 @@ export default function Index() {
 
   return <View class="demo-wrap">
       <text onClick={setCountFunc}>点我试试</text>
+      <input ref={inputEl} type="text" placeholder="这是一个input" />
+	    <View onClick={onButtonClick}>Focus the input</View>
       {/* <View><Text class="demo-title">functional component page</Text></View>
       <View class="demo-block">
         <View><Text class="demo-title">样式测试</Text></View>
@@ -77,8 +85,8 @@ export default function Index() {
         <Buttons />
         <ShowArea></ShowArea> 
       </Color> */}
-      <Demo>
+      {/* <Demo>
         <View x-memo>123{count}</View>
-      </Demo>
+      </Demo> */}
     </View>
 }

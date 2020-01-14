@@ -106,6 +106,8 @@ module.exports = {
     renameCoreModule(parsed.ast, runtimePath);
     // motor-universal-utils => motor-universal-utils/quickapp
     renameFileModule(parsed.ast);
+    // const inputEl = useRef(null) => const inputEl = useRef(null, 'inputEl');
+    renameUseRef(parsed.ast)
     renameAppConfig(parsed.ast, sourcePath, resourcePath);
 
     if (!disableCopyNpm) {
@@ -247,6 +249,18 @@ function renameFileModule(ast) {
             t.stringLiteral(source.node.value)
           )
         ]));
+      }
+    }
+  });
+}
+
+function renameUseRef(ast) {
+  traverse(ast, {
+    CallExpression(path) {
+      const { node, parentPath } = path;
+      const { callee } = node;
+      if (t.isVariableDeclarator(parentPath) && t.isIdentifier(callee) && callee.name === 'useRef') {
+        node.arguments.push(t.stringLiteral(parentPath.node.id.name))
       }
     }
   });

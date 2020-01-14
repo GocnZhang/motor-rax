@@ -6,7 +6,7 @@ const { minify } = require('terser');
  * Runtime packages should be a dependency of jsx2qa-cli,
  * for convenient to copy vendors.
  */
-const runtime = '@ali/motor-jsx2mp-runtime-x';
+const runtime = '@ali/motor-jsx2mp-runtime';
 const runtimePackageJSONPath = require.resolve(join(runtime, 'package.json'));
 const runtimePackageJSON = readJSONSync(runtimePackageJSONPath);
 const runtimePackagePath = join(runtimePackageJSONPath, '..');

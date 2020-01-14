@@ -4,7 +4,7 @@ const jsx2qaCliPkg = require('./package.json');
 const jsx2qaLoaderPkg = require('@ali/jsx2qa-loader/package.json');
 // eslint-disable-next-line
 const jsx2qaCompilerPkg = require('@ali/jsx2qa-compiler/package.json');
-const jsx2qaRuntimePkg = require('@ali/motor-jsx2mp-runtime-x/package.json');
+const jsx2qaRuntimePkg = require('@ali/motor-jsx2mp-runtime/package.json');
 
 const pkgVersion = [
   jsx2qaCliPkg,

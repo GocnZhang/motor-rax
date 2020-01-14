@@ -40,7 +40,15 @@ function generateQuickAppManifest (options) {
     quickappJSON.display = display;
 
     // 合并app.json里的config
-    Object.assign(quickappJSON, appConfig.config)
+    Object.assign(quickappJSON, appConfig.config);
+
+    // 如果需要登录，增加登录路由
+    if (appConfig.config && appConfig.config.needLogin) {
+      fs.copySync(path.join(__dirname, 'assets/Login'), path.join(distDirectory, '/src/Login'));
+      quickappJSON.router.pages['Login'] = {
+        "component": "index"
+      }
+    }
 
     fs.writeFileSync(path.join(distDirectory, '/src/manifest.json'), JSON.stringify(quickappJSON, null, 2))
   }

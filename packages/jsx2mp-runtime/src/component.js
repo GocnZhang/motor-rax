@@ -109,18 +109,11 @@ export default class Component {
   _registerRefs(refs) {
     this.refs = {};
     refs.forEach(({name, method}) => {
-      if (!method) {
-        const target = {
-          current: null
-        };
-        this._internal[name] = ref => {
-          target.current = ref;
-        };
-        this.refs[name] = target;
-      } else {
-        this._internal[name] = method;
-        this.refs[name] = method;
-      }
+      setTimeout(() => {
+        Object.assign(method, {
+          current: this._internal.$element(name)
+        })
+      }, 0)
     });
   }
 

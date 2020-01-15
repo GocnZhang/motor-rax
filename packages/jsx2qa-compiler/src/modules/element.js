@@ -286,6 +286,7 @@ function transformTemplate(
             replaceNode.__transformed = true;
             path.replaceWith(replaceNode);
           } else {
+
             // // this.xxx() => <View>{count}</View> => <View>{{xxxStateTemp1.count}}</View>
             const expressionName = getExpressionName(expression)
             if(renderFuncReg.test(expressionName)) {
@@ -298,8 +299,10 @@ function transformTemplate(
               isDirective,
             );
             replaceNode.__transformed = true;
+            const forParams = isForList(path);
+            const code = genExpression(replaceNode);
             path.replaceWith(
-              t.stringLiteral(createBinding(genExpression(replaceNode))),
+              t.stringLiteral(createBinding(forParams ? `(${forParams.forIndex}, ${forParams.forItem}) in ${code}` : code)),
             );
           }
         } else if (type === ELE) {
@@ -860,7 +863,7 @@ module.exports = {
         options.adapter,
         code
       );
-
+      // console.log('after', genExpression(parsed.templateAST))
       const dynamicValue = dynamicValues.reduce((prev, curr, vals) => {
         const name = curr.name;
         prev[name] = curr.value;

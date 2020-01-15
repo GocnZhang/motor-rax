@@ -5,6 +5,8 @@ const getListItem = require('../utils/getListItem');
 const CodeError = require('../utils/CodeError');
 const createJSX = require('../utils/createJSX');
 const findIndex = require('../utils/findIndex');
+const genExpression = require('../codegen/genExpression');
+const genCode = require('../codegen/genCode');
 
 const directiveIf = 'x-if';
 const directiveElseif = 'x-elseif';
@@ -279,6 +281,7 @@ function transformDirectiveList(ast, code, adapter) {
       }
     }
   });
+
 }
 
 function transformComponentFragment(ast) {
@@ -342,6 +345,14 @@ function transformListJSXElement(path, adapter) {
             originalIndex: args[2] ? args[2].name : args[1].name,
             parentList: node.__jsxlist
           };
+          if (args[0].name === 'listItem') {
+            innerNode.__forParams = {
+              item: args[0].name,
+              index: args[1].name,
+            }
+            // console.log(args);
+          }
+          // console.log('innerNode', innerNode);
           // <View x-for={items} data-item={setDataset(item)}>
           //   <Text class={classnames({ selected: index > 0 })}>{parse(item, index)}</Text>
           // </View>

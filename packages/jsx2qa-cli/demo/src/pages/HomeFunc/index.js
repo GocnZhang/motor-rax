@@ -1,24 +1,32 @@
-import { render, useState, useEffect, createContext, useRef } from 'rax';
-import { usePageShow, usePageHide, useLayoutEffect, useBackPress, useMenuPress } from 'rax-app';
+import { render, useState, useEffect, createContext, useRef, useContext } from 'rax';
+import { usePageShow, usePageHide, useLayoutEffect, useBackPress, useMenuPress, useMemo, useCallback } from 'rax-app';
 import View from 'rax-view';
 import Text from '@ali/motor-rax-text';
 import C from '../../components/component';
 import D from '../../components/functionalComponent';
 import Demo from '../../components/slot';
-// import ShowArea from "../../components/showarea";
-// import Buttons from "../../components/button";
-// import Color from "../../components/color";
 import './index.css';
 
-const colorContext = createContext({});
+const Context = createContext({
+  theme: 'dark'
+});
 export default function Index() {
   const [count, setCount] = useState(0);
   const inputEl = useRef(null);
+  const context = useContext(Context);
   const onButtonClick = () => {
     // `current` points to the mounted text input element
     // inputEl.current.focus();
     console.log('inputEl', inputEl);
   };
+  const memoizedValue = useMemo(() => {
+    return 10 + count
+  }, [count]);
+  const memoizedCallback = useCallback(
+    () => count + 100,
+    [count],
+  );
+  console.log('memoizedValue', memoizedValue, memoizedCallback());
   // const [list, setList] = useState([1,2,3]);
   // function onCountClick() {
   //   setCount(count+1)
@@ -40,22 +48,22 @@ export default function Index() {
   //   console.log('usePageHide excuted');
   // })
 
-  useBackPress(() => {
-    console.log('useBackPress excuted')
-  })
+  // useBackPress(() => {
+  //   console.log('useBackPress excuted')
+  // })
 
-  useMenuPress(() => {
-    console.log('useBackPress excuted')
-  })
+  // useMenuPress(() => {
+  //   console.log('useBackPress excuted')
+  // })
 
   function setCountFunc() {
-    setCount(1);
+    setCount(count+1);
   }
 
   return <View class="demo-wrap">
       <text onClick={setCountFunc}>点我试试</text>
-      <input ref={inputEl} type="text" placeholder="这是一个input" />
-	    <View onClick={onButtonClick}>Focus the input</View>
+      {/* <input ref={inputEl} type="text" placeholder="这是一个input" />
+	    <View onClick={onButtonClick}>Focus the input</View> */}
       {/* <View><Text class="demo-title">functional component page</Text></View>
       <View class="demo-block">
         <View><Text class="demo-title">样式测试</Text></View>
@@ -81,9 +89,12 @@ export default function Index() {
 
       <span onclick={onCountClick}>xxxxxxx点我</span>
       {count} */}
+      <View>The theme is {context.theme}.</View>;
       {/* <Color colorContext={colorContext}>
-        <Buttons />
-        <ShowArea></ShowArea> 
+        <View>
+          <Buttons colorContext={colorContext}></Buttons>
+          <ShowArea colorContext={colorContext}></ShowArea> 
+        </View>
       </Color> */}
       {/* <Demo>
         <View x-memo>123{count}</View>

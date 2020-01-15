@@ -114,6 +114,17 @@ function output(content, raw, options) {
     }
     if (css && outputPath.css) {
       uxTxt += `<style src="./${relative(dirname(outputPath.template), outputPath.css)}"></style>\n`
+    } else {
+      uxTxt += `<style>
+    .__rax-view {
+      border: 0 solid black;
+      display:flex;
+      flex-direction:column;
+      align-content:flex-start;
+      flex-shrink:0;
+      box-sizing:border-box;
+    }
+  </style>\n`
     }
     writeFileWithDirCheck(outputPath.template, uxTxt);
   }

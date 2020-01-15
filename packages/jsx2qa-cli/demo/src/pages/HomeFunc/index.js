@@ -13,7 +13,7 @@ import './index.css';
 const colorContext = createContext({});
 export default function Index() {
   const [count, setCount] = useState(0);
-  const inputEl = useRef(null, 'inputEl');
+  const inputEl = useRef(null);
   const onButtonClick = () => {
     // `current` points to the mounted text input element
     // inputEl.current.focus();

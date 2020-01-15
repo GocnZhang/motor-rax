@@ -40,6 +40,7 @@ function transformAttribute(ast, code, adapter) {
           } else {
             throw new CodeError(code, node, path.loc, "Ref's type must be string or jsxExpressionContainer");
           }
+          node.name.name = 'id';
           break;
         default:
           

@@ -300,9 +300,10 @@ function transformTemplate(
             );
             replaceNode.__transformed = true;
             const forParams = isForList(path);
+            const isForAttr = path.parent && path.parent.name && path.parent.name.name === 'for';
             const code = genExpression(replaceNode);
             path.replaceWith(
-              t.stringLiteral(createBinding(forParams ? `(${forParams.forIndex}, ${forParams.forItem}) in ${code}` : code)),
+              t.stringLiteral(createBinding(forParams && isForAttr ? `(${forParams.forIndex}, ${forParams.forItem}) in ${code}` : code)),
             );
           }
         } else if (type === ELE) {

@@ -269,7 +269,7 @@ function renameUseRef(ast) {
 /**
  * Rename app.json to appConfig.js, for prev is compiled to adapte miniapp.
  * eg:
- *   import appConfig from './app.json' => import appConfig from './appConfig.js'
+ *   import appConfig from './app.json' => import appConfig from './appConfig'
  * @param ast Babel AST.
  * @param sourcePath Folder path to source.
  * @param resourcePath Current handling file source path.
@@ -281,7 +281,7 @@ function renameAppConfig(ast, sourcePath, resourcePath) {
       if (source.isStringLiteral()) {
         const appConfigSourcePath = join(resourcePath, '..', source.node.value);
         if (appConfigSourcePath === join(sourcePath, 'app.json')) {
-          const replacement = source.node.value.replace(/app\.json/, 'appConfig.js');
+          const replacement = source.node.value.replace(/app\.json/, 'appConfig');
           source.replaceWith(t.stringLiteral(replacement));
         }
       }

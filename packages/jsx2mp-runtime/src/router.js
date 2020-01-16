@@ -4,6 +4,7 @@ let router;
 let __routerMap = global ? (global.__routerMap || {}) : {};
 
 export function __updateRouterMap(appConfig) {
+  global.__routerMap = global.__routerMap || {}
   appConfig.routes.map(route => {
     global.__routerMap[route.path] = route.source.replace(/\/index$/, '');
   });

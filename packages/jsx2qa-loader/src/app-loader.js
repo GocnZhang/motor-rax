@@ -90,7 +90,7 @@ module.exports = async function appLoader(content) {
       code: join(outputPath, 'app.ux'),
       json: join(outputPath, 'app.json'),
       css: join(outputPath, 'app' + platform.extension.css),
-      config: join(outputPath, 'app.config.js')
+      config: join(outputPath, 'appConfig.js')
     },
     mode,
     type: 'app'

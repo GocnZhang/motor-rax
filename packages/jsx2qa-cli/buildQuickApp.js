@@ -54,12 +54,12 @@ function generateQuickAppManifest (options) {
   }
 
   // 移除快应用下的app.config.json / app.json
-  if (fs.existsSync(path.join(distDirectory, '/src/app.json'))) {
-    fs.removeSync(path.join(distDirectory, '/src/app.json'));
-  }
-  if (fs.existsSync(path.join(distDirectory, '/src/app.config.js'))) {
-    fs.removeSync(path.join(distDirectory, '/src/app.config.js'));
-  }
+  // if (fs.existsSync(path.join(distDirectory, '/src/app.json'))) {
+  //   fs.removeSync(path.join(distDirectory, '/src/app.json'));
+  // }
+  // if (fs.existsSync(path.join(distDirectory, '/src/app.config.js'))) {
+  //   fs.removeSync(path.join(distDirectory, '/src/app.config.js'));
+  // }
 
   // 如果存在app.ux文件则平移
   // if (fs.existsSync(path.join(workDirectory, '/src/app.ux'))) {

@@ -1,6 +1,6 @@
 {
   "name": "@ali/jsx2qa-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "BSD-3-Clause",
   "description": "A cli tool to transform Rax JSX based project to quickapp.",
   "bin": {

@@ -98,7 +98,8 @@ function createProxyMethods(events) {
         const event = args[0];
         let context = this.instance; // Context default to Rax component instance.
 
-        const dataset = event && event.currentTarget ? event.currentTarget.dataset : {};
+        const et = event && (event.currentTarget || event._target);
+        const dataset = et ? et.dataset : {};
         const datasetArgs = [];
         // Universal event args
         const datasetKeys = Object.keys(dataset);
@@ -124,8 +125,6 @@ function createProxyMethods(events) {
             }
           });
         }
-        // Concat args.
-        args = datasetArgs.concat(args);
 
         // quickapp
         const evt = Object.assign({}, args[0]);
@@ -134,7 +133,7 @@ function createProxyMethods(events) {
           evt.currentTarget.dataset = args[0]._target._dataset;
         }
 
-        const __args = [evt, ...args.slice(1)];
+        const __args = datasetArgs.concat([evt, ...args.slice(1)]);
 
         if (this.instance._methods[eventName]) {
           return this.instance._methods[eventName].apply(context, __args);

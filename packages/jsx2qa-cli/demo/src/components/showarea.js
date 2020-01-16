@@ -3,6 +3,8 @@ import { render, createElement, useContext } from "rax";
 
 export default function ShowArea (props) {
   const { colorContext } = props;
-  const { color } = useContext(colorContext);
-  return <div style={{ color: color }}>字体颜色展示为{color}</div>;
+  console.log('colorContext', props);
+  const context = useContext(colorContext);
+  console.log('color', context);
+  return <div style={{ color: context.color }}>字体颜色展示为{color}</div>;
 };

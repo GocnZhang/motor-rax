@@ -1,11 +1,11 @@
 import { navigateTo, redirectTo, navigateBack } from '@@ADAPTER@@';
 
 let router;
-let __routerMap = {};
+let __routerMap = global ? (global.__routerMap || {}) : {};
 
 export function __updateRouterMap(appConfig) {
   appConfig.routes.map(route => {
-    __routerMap[route.path] = route.source;
+    global.__routerMap[route.path] = route.source.replace(/\/index$/, '');
   });
 }
 
@@ -74,7 +74,7 @@ export function canGo() {
  */
 function generateUrl(path) {
   const [pathname, query] = path.split('?');
-  const miniappPath = __routerMap[pathname];
+  const miniappPath = global.__routerMap[pathname];
   if (!miniappPath) {
     throw new Error(`Path ${path} is not found`);
   }

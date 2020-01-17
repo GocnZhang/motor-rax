@@ -232,6 +232,8 @@ function transformTemplate(
             node.loc,
             `Only EventHandlers are supported in Mini Program, eg: onClick/onChange, instead of "${attributeName}".`,
           );
+        const openNodeName = parentPath.parentPath.node.name.name;
+        const nativeRaxComponent = /rax-/g.test(openNodeName);
         const callExp = expression.body;
         const args = callExp.arguments;
         const { attributes } = parentPath.parentPath.node;
@@ -259,8 +261,11 @@ function transformTemplate(
             );
           });
         }
-
-        path.replaceWith(t.stringLiteral(name));
+        if(nativeRaxComponent) {
+          path.replaceWith(t.stringLiteral(createBinding(name)));
+        } else {
+          path.replaceWith(t.stringLiteral(name));
+        }
         break;
 
       // <tag key={this.props.name} key2={a.b} /> => <tag key="{{_d0.name}}" key2="{{_d1.b}}" />

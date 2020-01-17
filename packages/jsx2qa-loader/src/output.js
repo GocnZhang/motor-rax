@@ -116,22 +116,25 @@ function output(content, raw, options) {
       uxTxt += `<style src="./${relative(dirname(outputPath.template), outputPath.css)}"></style>\n`
     } else {
       uxTxt += `<style>
-    .__rax-view {
-      border: 0 solid black;
-      display:flex;
-      flex-direction:column;
-      align-content:flex-start;
-      flex-shrink:0;
-      box-sizing:border-box;
-    }
+  .__rax-view {
+    width: 100%;
+    border: 0 solid black;
+    display:flex;
+    flex-direction:column;
+    align-content:flex-start;
+    flex-shrink:0;
+    box-sizing:border-box;
+  }
   </style>\n`
     }
     writeFileWithDirCheck(outputPath.template, uxTxt);
   }
   if (css) {
     // 添加默认样式，并修改rpx为px
-    writeFileWithDirCheck(outputPath.css, `
+    if (!css.includes('.__rax-view')) {
+      writeFileWithDirCheck(outputPath.css, `
 .__rax-view {
+  width: 100%;
   border: 0 solid black;
   display:flex;
   flex-direction:column;
@@ -140,6 +143,10 @@ function output(content, raw, options) {
   box-sizing:border-box;
 }
 ${css.replace(/rpx/g, 'px')}`);
+    } else {
+      writeFileWithDirCheck(outputPath.css, `
+${css.replace(/rpx/g, 'px')}`);
+    }
   }
   if (config) {
     writeFileWithDirCheck(outputPath.config, config);

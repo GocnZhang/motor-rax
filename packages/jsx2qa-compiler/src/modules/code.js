@@ -267,9 +267,9 @@ function renameUseRef(ast) {
 }
 
 /**
- * Rename app.json to app.config.js, for prev is compiled to adapte miniapp.
+ * Rename app.json to appConfig.js, for prev is compiled to adapte miniapp.
  * eg:
- *   import appConfig from './app.json' => import appConfig from './app.config.js'
+ *   import appConfig from './app.json' => import appConfig from './appConfig'
  * @param ast Babel AST.
  * @param sourcePath Folder path to source.
  * @param resourcePath Current handling file source path.
@@ -281,7 +281,7 @@ function renameAppConfig(ast, sourcePath, resourcePath) {
       if (source.isStringLiteral()) {
         const appConfigSourcePath = join(resourcePath, '..', source.node.value);
         if (appConfigSourcePath === join(sourcePath, 'app.json')) {
-          const replacement = source.node.value.replace(/app\.json/, 'app.config.js');
+          const replacement = source.node.value.replace(/app\.json/, 'appConfig');
           source.replaceWith(t.stringLiteral(replacement));
         }
       }
@@ -322,7 +322,7 @@ function renameNpmModules(ast, npmRelativePath, filename, cwd) {
     const nodeModulePath = join(rootContext, 'node_modules');
     const searchPaths = [nodeModulePath];
     let target = require.resolve(npmName, { paths: searchPaths });
-    
+
     // In tnpm, 'target will be like following (symbol linked path):
     // ***/_universal-toast_1.0.0_universal-toast/lib/index.js
     let packageJSONPath;

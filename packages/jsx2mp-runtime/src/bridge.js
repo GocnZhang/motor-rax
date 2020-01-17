@@ -94,11 +94,17 @@ function createProxyMethods(events) {
   if (Array.isArray(events)) {
     events.forEach(eventName => {
       methods[eventName] = function(...args) {
+        // when this.instance === null, it point to ux inner component
+        if (this && !this.instance && this._parent) {
+          this.instance = this._parent;
+        }
+
         // `this` point to page/component instance.
         const event = args[0];
         let context = this.instance; // Context default to Rax component instance.
 
-        const dataset = event && event.currentTarget ? event.currentTarget.dataset : {};
+        const et = event && (event.currentTarget || event._target);
+        const dataset = et ? et.dataset : {};
         const datasetArgs = [];
         // Universal event args
         const datasetKeys = Object.keys(dataset);
@@ -124,8 +130,6 @@ function createProxyMethods(events) {
             }
           });
         }
-        // Concat args.
-        args = datasetArgs.concat(args);
 
         // quickapp
         const evt = Object.assign({}, args[0]);
@@ -134,7 +138,7 @@ function createProxyMethods(events) {
           evt.currentTarget.dataset = args[0]._target._dataset;
         }
 
-        const __args = [evt, ...args.slice(1)];
+        const __args = datasetArgs.concat([evt, ...args.slice(1)]);
 
         if (this.instance._methods[eventName]) {
           return this.instance._methods[eventName].apply(context, __args);
@@ -198,6 +202,7 @@ export function runApp(appConfig, pageProps = {}) {
   if (_appConfig) {
     throw new Error('runApp can only be called once.');
   }
+  __updateRouterMap(appConfig);
 
   _appConfig = appConfig; // Store raw app config to parse router.
 

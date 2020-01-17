@@ -94,6 +94,11 @@ function createProxyMethods(events) {
   if (Array.isArray(events)) {
     events.forEach(eventName => {
       methods[eventName] = function(...args) {
+        // when this.instance === null, it point to ux inner component
+        if (this && !this.instance && this._parent) {
+          this.instance = this._parent;
+        }
+
         // `this` point to page/component instance.
         const event = args[0];
         let context = this.instance; // Context default to Rax component instance.

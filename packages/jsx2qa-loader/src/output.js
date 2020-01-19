@@ -117,7 +117,6 @@ function output(content, raw, options) {
     } else {
       uxTxt += `<style>
   .__rax-view {
-    width: 100%;
     border: 0 solid black;
     display:flex;
     flex-direction:column;
@@ -134,7 +133,6 @@ function output(content, raw, options) {
     if (!css.includes('.__rax-view')) {
       writeFileWithDirCheck(outputPath.css, `
 .__rax-view {
-  width: 100%;
   border: 0 solid black;
   display:flex;
   flex-direction:column;

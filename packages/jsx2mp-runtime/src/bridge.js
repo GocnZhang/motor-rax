@@ -217,7 +217,7 @@ export function runApp(appConfig, pageProps = {}) {
   if (_appConfig) {
     throw new Error('runApp can only be called once.');
   }
-  __updateRouterMap(appConfig);
+  const globalRoutes = __updateRouterMap(appConfig);
 
   _appConfig = appConfig; // Store raw app config to parse router.
 
@@ -237,7 +237,8 @@ export function runApp(appConfig, pageProps = {}) {
           fn.call(this, launchOptions);
         }
       }
-    }
+    },
+    globalRoutes
   }); // eslint-disable-next-line
 
   return appOptions;

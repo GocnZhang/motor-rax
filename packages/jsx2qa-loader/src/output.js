@@ -86,6 +86,14 @@ function output(content, raw, options) {
   }
   if(type === 'app') {
     code = `<script>\n${code}\n</script>\n`;
+    if(json.iconfont) {
+      code = `${code}<style>\n${json.iconfont.split(',').map((v) => {
+        return `@font-face {
+          font-family: icomoon;
+          src: url('${v}');
+        }`
+      }).join('\n')}\n</style>`
+    }
   }
   // Write file
   writeFileWithDirCheck(outputPath.code, code);

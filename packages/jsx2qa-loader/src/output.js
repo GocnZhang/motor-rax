@@ -130,7 +130,6 @@ function output(content, raw, options) {
     flex-direction:column;
     align-content:flex-start;
     flex-shrink:0;
-    box-sizing:border-box;
   }
   </style>\n`
     }
@@ -146,7 +145,6 @@ function output(content, raw, options) {
   flex-direction:column;
   align-content:flex-start;
   flex-shrink:0;
-  box-sizing:border-box;
 }
 ${css.replace(/rpx/g, 'px')}`);
     } else {

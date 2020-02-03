@@ -1,6 +1,6 @@
 {
   "name": "@ali/jsx2qa-loader",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "main": "src/app-loader.js",
   "scripts": {

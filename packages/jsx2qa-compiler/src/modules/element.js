@@ -260,11 +260,12 @@ function transformTemplate(
             );
           });
         }
-        if(nativeRaxComponent) {
-          path.replaceWith(t.stringLiteral(createBinding(name)));
-        } else {
-          path.replaceWith(t.stringLiteral(name));
-        }
+        path.replaceWith(t.stringLiteral(createBinding(name)));
+        // if(nativeRaxComponent) {
+        //   path.replaceWith(t.stringLiteral(createBinding(name)));
+        // } else {
+        //   path.replaceWith(t.stringLiteral(name));
+        // }
         break;
 
       // <tag key={this.props.name} key2={a.b} /> => <tag key="{{_d0.name}}" key2="{{_d1.b}}" />

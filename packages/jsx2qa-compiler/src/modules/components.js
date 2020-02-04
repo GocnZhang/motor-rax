@@ -269,11 +269,17 @@ function transformDataset(parsed, options) {
         && !node.__transformDataset
         && node.openingElement.attributes.some(x => x.name.name.indexOf('data-') > -1)) {
           node.__transformDataset = true;
-          let attr = {};
+          let attr = {
+            class: t.stringLiteral('__rax-view')
+          };
           node.openingElement.attributes.forEach(v => {
             if (v.name.name.indexOf('data-') > -1) {
-              attr[ v.name.name ] = v.value
+              attr[ v.name.name ] = v.value;
             }
+            if (v.name.name.indexOf('onClick') > -1) {
+              attr[ v.name.name ] = v.value;
+            }
+            
           });
           path.replaceWith(createJSX('div', attr, [path.node]))
         }

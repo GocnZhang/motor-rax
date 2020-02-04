@@ -63,6 +63,7 @@ function transformPreComponentAttr(ast, options) {
       const { node, parentPath } = path;
       const attrName = node.name.name;
       if(parentPath.node.name.name.indexOf('rax-') !== -1) {
+        // origin components
         // onChange => bindChange
         if(attrName.slice(0, 2) === 'on') {
           node.name.name = attrName.replace('on', 'bind');
@@ -77,6 +78,9 @@ function transformPreComponentAttr(ast, options) {
             return v; 
           });
         }
+      }
+      if(parentPath.node.name.name === 'div') {
+        node.name.name = node.name.name.toLowerCase();
       }
     }
   })

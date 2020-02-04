@@ -225,18 +225,6 @@ function renameCoreModule(ast, runtimePath) {
   });
 }
 
-// function renameUtils(ast) {
-//   traverse(ast, {
-//     ImportDeclaration(path) {
-//       const source = path.get('source');
-//       console.log('source.node.value', source.node.value);
-//       if (source.isStringLiteral() && isUnivisalUtils(source.node.value)) {
-//         source.replaceWith(t.stringLiteral(runtimePath));
-//       }
-//     }
-//   });
-// }
-
 // import img from '../assets/img.png' => const img = '../assets/img.png'
 function renameFileModule(ast) {
   traverse(ast, {

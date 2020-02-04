@@ -15,7 +15,9 @@ const { getNpmName, normalizeFileName } = require('../utils/pathHelper');
 
 const RELATIVE_COMPONENTS_REG = /^\..*(\.jsx?)?$/i;
 const PKG_NAME_REG = /^.*\/node_modules\/([^\/]*).*$/;
+const TAG_REG = /motor-/;
 let tagCount = 0;
+
 
 /**
  * Transform the component name is identifier
@@ -36,7 +38,6 @@ function transformIdentifierComponentName(path, alias, dynamicValue, parsed, opt
   const componentTag = alias.default ? aliasName : `${aliasName}-${alias.local.toLowerCase()}`;
   const pureComponentTag = componentTag.replace('_ali_', '')
   replaceComponentTagName(path, t.jsxIdentifier(pureComponentTag));
-
   if (!compiledComponents[componentTag]) {
     const parentJSXListEl = path.findParent(p => p.node.__jsxlist);
     // <tag __tagId="tagId" />
@@ -256,7 +257,30 @@ function transformComponents(parsed, options) {
     componentsAlias
   };
 }
-
+function transformDataset(parsed, options) {
+  const { ast, templateAST, imported } = parsed;
+  traverse(templateAST, {
+    JSXElement: {
+      exit(path) {
+        const { node } = path;
+        const openTagName = node.openingElement.name;
+        if (t.isJSXIdentifier(openTagName) 
+        && TAG_REG.test(openTagName.name) 
+        && !node.__transformDataset
+        && node.openingElement.attributes.some(x => x.name.name.indexOf('data-') > -1)) {
+          node.__transformDataset = true;
+          let attr = {};
+          node.openingElement.attributes.forEach(v => {
+            if (v.name.name.indexOf('data-') > -1) {
+              attr[ v.name.name ] = v.value
+            }
+          });
+          path.replaceWith(createJSX('div', attr, [path.node]))
+        }
+      }
+    }
+  })
+}
 /**
  * Rax components.
  */
@@ -266,6 +290,8 @@ module.exports = {
       parsed.componentDependentProps = {};
     }
     const { contextList, dynamicValue, componentsAlias } = transformComponents(parsed, options);
+    // <motor-rax-text data-item="xxx"></motor-rax-text> => <div data-item="xxx"><motor-rax-text data-item="xxx"></motor-rax-text></div>
+    transformDataset(parsed, options)
     // Collect used components
     Object.keys(componentsAlias).forEach(componentTag => {
       if (!parsed.usingComponents) {
@@ -289,7 +315,8 @@ module.exports = {
     ret.usingComponents = parsed.usingComponents;
   },
   // For test case.
-  _transformComponents: transformComponents
+  _transformComponents: transformComponents,
+  _transformDataset: transformDataset
 };
 
 function getComponentAlias(tagName, imported) {

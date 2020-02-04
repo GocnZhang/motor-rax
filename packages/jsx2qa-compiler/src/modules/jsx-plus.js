@@ -270,7 +270,6 @@ function transformDirectiveList(ast, code, adapter) {
           jsxplus: true
         };
         parentJSXEl.replaceWith(listEl);
-
         parentJSXEl.parentPath._forParams = {
           forItem: params[0].name,
           forIndex: params[1].name,

@@ -23,9 +23,11 @@ function _transformTemplate(defaultExportedPath, code, options) {
 
   const returnPath = getReturnElementPath(renderFnPath);
   if (!returnPath) throw new Error('Can not find JSX Statements in ' + options.resourcePath);
-
   let returnArgument = returnPath.get('argument').node;
-  traverse(returnArgument, {
+  if(t.isArrayExpression(returnPath.get('argument'))) {
+    returnArgument = createJSX('div', {}, returnPath.get('argument').node.elements)
+  }
+  // traverse(returnArgument, {
     // JSXText(path) {
     //   // <View>hello</View> => <View><text>hello</text></View>
     //   const { node, parentPath } = path;
@@ -40,13 +42,14 @@ function _transformTemplate(defaultExportedPath, code, options) {
     //     path.replaceWith(createJSX('text', {}, [path.node]));
     //   }
     // },
-  })
+  // })
   if (!['JSXText', 'JSXExpressionContainer', 'JSXSpreadChild', 'JSXElement', 'JSXFragment'].includes(returnArgument.type)) {
     returnArgument = t.jsxExpressionContainer(returnArgument);
   }
   returnPath.remove();
   const result = {};
-  result[TEMPLATE_AST] = createJSX('template', { pagePath: t.StringLiteral('true') }, [returnArgument])
+  const template = createJSX('div', { class: t.StringLiteral('page-container') }, [returnArgument])
+  result[TEMPLATE_AST] = createJSX('template', { pagePath: t.StringLiteral('true') }, [template])
   result[RENDER_FN_PATH] = renderFnPath;
   return result;
 }
@@ -63,7 +66,11 @@ function transformComTemplate(parsed, options, code) {
     JSXText(path) {
       // <View>hello</View> => <View><text>hello</text></View>
       const { node, parentPath } = path;
-      if(t.isJSXElement(parentPath) && path.node.value && path.node.value.trim().length && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'div' })) {
+      const openTagName = parentPath.node.openingElement.name;
+      if(t.isJSXElement(parentPath)
+      && path.node.value
+      && path.node.value.trim().length
+      && (t.isJSXIdentifier(openTagName, { name: 'div' }) || t.isJSXIdentifier(openTagName, { name: 'motor-rax-link' }))) {
         path.replaceWith(createJSX('text', {}, [path.node]));
       }
     },

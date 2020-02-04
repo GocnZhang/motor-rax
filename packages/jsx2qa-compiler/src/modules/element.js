@@ -57,7 +57,6 @@ function transformTemplate(
     }
 
     const isEventHandler = isEventHandlerAttr(attributeName);
-    
     switch (expression.type) {
       // <div foo={'string'} /> -> <div foo="string" />
       // <div>{'hello world'}</div> -> <div>hello world</div>
@@ -505,8 +504,11 @@ function transformTemplate(
         );
       }
     }
-
-    node.__transformed = true;
+    if(parentPath.isJSXAttribute() && !parentPath.parentPath.node.attributes.some(x => {
+      return t.isJSXIdentifier(x.name) && x.name.name.indexOf('data-') > -1
+    })) {
+      node.__transformed = true;
+    }
   }
 
   traverse(ast, {
@@ -572,7 +574,6 @@ function transformTemplate(
       },
     },
   });
-
   return {
     dynamicValues: dynamicValues.getStore(),
     dynamicEvents: dynamicEvents.getStore(),
@@ -869,7 +870,6 @@ module.exports = {
         options.adapter,
         code
       );
-      // console.log('after', genExpression(parsed.templateAST))
       const dynamicValue = dynamicValues.reduce((prev, curr, vals) => {
         const name = curr.name;
         prev[name] = curr.value;

@@ -1,6 +1,6 @@
 {
   "name": "@ali/jsx2qa-compiler",
-  "version": "1.0.12",
+  "version": "1.1.0",
   "description": "Transform JSX styled Rax Components into quickapp parts.",
   "main": "src/index.js",
   "scripts": {

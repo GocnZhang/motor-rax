@@ -1,5 +1,6 @@
 /* global @system */
 import router from '@system.router';
+import { setRoutes } from '../router';
 import {
   COMPONENT_DID_MOUNT,
 } from '../cycles';
@@ -42,6 +43,9 @@ export function getPageLifecycle({ mount, unmount, show, hide }) {
       unmount.apply(this, arguments);
     },
     onShow() {
+      const routes = this.$app.$def.globalRoutes || {}
+      // 重写全局router，避免页面初始化时覆盖
+      setRoutes(routes)
       show.apply(this, arguments);
     },
     onHide() {

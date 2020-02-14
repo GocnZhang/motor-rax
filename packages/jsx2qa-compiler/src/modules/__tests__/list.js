@@ -10,7 +10,10 @@ describe('Transform list', () => {
     `);
     _transformList(ast, [], adapter);
 
-    expect(genCode(ast).code).toEqual(`<View><block for={(val, idx) in arr}><item data-value={val} data-key={idx} /></block></View>`);
+    expect(genCode(ast).code).toEqual(`<View><block for={arr.map((val, idx) => ({
+    val: val,
+    idx: idx
+  }))}><item data-value={val} data-key={idx} /></block></View>`);
   });
 
   it('transform array.map in JSXContainer', () => {
@@ -21,7 +24,12 @@ describe('Transform list', () => {
     `);
     _transformList(ast, [], adapter);
 
-    expect(genCode(ast).code).toEqual(`<View><block for={(val, idx) in arr}><item data-value={val} data-key={idx} /></block></View>`);
+    expect(genCode(ast).code).toEqual(`<View><block for={arr.map((val, idx) => {
+    return {
+      val: val,
+      idx: idx
+    };
+  })}><item data-value={val} data-key={idx} /></block></View>`);
   });
 
   it('bind list variable', () => {
@@ -30,7 +38,9 @@ describe('Transform list', () => {
     `);
     _transformList(ast, [], adapter);
 
-    expect(genCode(ast).code).toEqual(`<View><block for={(item, idx) in arr}><View>{item.title}<image source={{
+    expect(genCode(ast).code).toEqual(`<View><block for={arr.map((item, idx) => ({
+    item: item
+  }))}><View>{item.title}<image source={{
         uri: item.picUrl
       }} resizeMode={resizeMode} /></View></block></View>`);
   });
@@ -42,7 +52,7 @@ describe('Transform list', () => {
     const ast = parseExpression(raw);
     _transformList(ast, [], adapter);
 
-    expect(genCode(ast, { concise: true }).code).toEqual('<View><block for={(val, idx) in [1, 2, 3]}><Text>{idx}</Text></block></View>');
+    expect(genCode(ast, { concise: true }).code).toEqual('<View><block for={[1, 2, 3].map((val, idx) => { return { idx: idx }; })}><Text>{idx}</Text></block></View>');
   });
 
   it('nested list', () => {
@@ -73,8 +83,8 @@ describe('Transform list', () => {
     expect(genCode(ast, { concise: true }).code).toEqual(`<View className="header" onClick={() => { setWorkYear(workYear + 1); }}>
     <View style={{ color: 'red' }}>workYear: {workYear}</View>
     <View style={{ color: 'red' }}>count: {count}</View>
-    <block for={(l1, index) in arr}><View>
-          <block for={(l2, index) in l1}><View>{l2}</View></block>
+    <block for={arr.map((l1, index) => { return { l1: l1, l2: l2, index: index }; })}><View>
+          <block for={l1.map((l2, index) => { return { l2: l2 }; })}><View>{l2}</View></block>
         </View></block>
     <Loading count={count} />
     {props.children}
@@ -88,6 +98,6 @@ describe('Transform list', () => {
     const ast = parseExpression(raw);
     _transformList(ast, [], adapter);
 
-    expect(genCode(ast, { concise: true }).code).toEqual('<View><block for={(item, index) in [1, 2, 3]}><Text>test</Text></block></View>');
+    expect(genCode(ast, { concise: true }).code).toEqual('<View><block for={[1, 2, 3].map((item, index) => { return {}; })}><Text>test</Text></block></View>');
   });
 });

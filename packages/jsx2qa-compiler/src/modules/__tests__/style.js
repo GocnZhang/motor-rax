@@ -22,8 +22,8 @@ function genDynamicAttrs(dynamicValues) {
 describe('Transform style', () => {
   it('should transform style props', () => {
     const raw = '<Text style={styles.name}>hello</Text>';
-    const expected = '<Text style="{{_s0}}">hello</Text>';
-    const expectedDynamicValue = '{ _s0: __create_style__(styles.name) }';
+    const expected = '<Text style="{{s0}}">hello</Text>';
+    const expectedDynamicValue = '{ s0: __create_style__(styles.name) }';
     const ast = parseExpression(raw);
     const dynamicValues = _transform(ast);
     expect(genExpression(ast)).toEqual(expected);

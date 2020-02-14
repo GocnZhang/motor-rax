@@ -79,7 +79,7 @@ function transformRenderFunction(ast, renderFnPath, code, options) {
               targetAttr[v.key.name] = t.stringLiteral(createBinding(`${tempDataName}.${v.value.name}`))
             })
             const targetPath = path.parentPath.isJSXExpressionContainer() ? path.parentPath : path;
-            targetPath.replaceWith(targetNode);
+            targetNode && targetPath.replaceWith(targetNode);
           }
         }
       }
@@ -91,18 +91,18 @@ function transformRenderFunction(ast, renderFnPath, code, options) {
 function transformTarget(ast, objectExpression, tempDataName) {
   const keys = objectExpression.properties.map((v) => v.key.name);
   traverse(ast, {
-    JSXText(path) {
-      // <View>hello</View> => <View><text>hello</text></View>
-      const { node, parentPath } = path;
-      if(t.isJSXElement(parentPath) && path.node.value && path.node.value.trim().length && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
-        path.replaceWith(createJSX('text', {}, [path.node]));
-      }
-    },
+    // JSXText(path) {
+    //   // <View>hello</View> => <View><text>hello</text></View>
+    //   const { node, parentPath } = path;
+    //   if(t.isJSXElement(parentPath) && path.node.value && path.node.value.trim().length && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
+    //     path.replaceWith(createJSX('text', {}, [path.node]));
+    //   }
+    // },
     JSXExpressionContainer(path) {
       const { node, parentPath } = path;
-      if(t.isJSXElement(parentPath) && t.isJSXExpressionContainer(path) && (t.isIdentifier(node.expression) || t.isMemberExpression(node.expression)) && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
-        path.replaceWith(createJSX('text', {}, [path.node]));
-      }
+      // if(t.isJSXElement(parentPath) && t.isJSXExpressionContainer(path) && (t.isIdentifier(node.expression) || t.isMemberExpression(node.expression)) && t.isJSXIdentifier(parentPath.node.openingElement.name, { name: 'View' })) {
+      //   path.replaceWith(createJSX('text', {}, [path.node]));
+      // }
       // count.xxx => `${methodName}StateTemp${tempId++}`.count.xxx
       const { expression } = node;
       const propertyName = getPropertyName(expression);

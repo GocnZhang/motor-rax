@@ -21,22 +21,16 @@ describe('Transform JSX Attribute', () => {
     const code = '<View ref={scrollViewRef}>test</View>';
     const ast = parseExpression(code);
     const refs = _transformAttribute(ast, code, adapter);
-    expect(genCode(ast).code).toEqual('<View ref="scrollViewRef">test</View>');
+    expect(genCode(ast).code).toEqual('<View id="scrollViewRef">test</View>');
     expect(refs).toEqual([t.stringLiteral('scrollViewRef')]);
   });
-  it('should not transform wechat custom component className', () => {
-    const code = '<Custom className="box">test</Custom>';
-    const ast = parseExpression(code);
-    _transformAttribute(ast, code, adapter);
-    expect(genCode(ast).code).toEqual('<Custom class-name="box">test</Custom>');
-  });
   it('should transform wechat custom component style into styleSheet', () => {
-    const code = "<Custom style={{width: '100rpx'}}>test</Custom>";
+    const code = "<motor-rax-link style={{width: '100rpx'}}>test</motor-rax-link>";
     const ast = parseExpression(code);
     _transformAttribute(ast, code, adapter);
-    expect(genCode(ast).code).toEqual(`<Custom style-sheet={{
+    expect(genCode(ast).code).toEqual(`<motor-rax-link style-sheet={{
   width: '100rpx'
-}}>test</Custom>`);
+}}>test</motor-rax-link>`);
   });
   it('should transform on to bind', () => {
     const code = "<rax-text onInputChange={this.onInputChange}>test</rax-text>";
@@ -44,5 +38,12 @@ describe('Transform JSX Attribute', () => {
     _transformAttribute(ast, code, adapter);
     _transformPreComponentAttr(ast, adapter)
     expect(genCode(ast).code).toEqual(`<rax-text bind-input-change={this.onInputChange}>test</rax-text>`);
+  });
+  it('should transform lowercase in div', () => {
+    const code = "<div onClick={this.onInputChange}>test</div>";
+    const ast = parseExpression(code);
+    _transformAttribute(ast, code, adapter);
+    _transformPreComponentAttr(ast, adapter)
+    expect(genCode(ast).code).toEqual(`<div onclick={this.onInputChange}>test</div>`);
   });
 });

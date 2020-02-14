@@ -279,8 +279,10 @@ function transformDataset(parsed, options) {
             if (v.name.name.indexOf('onClick') > -1) {
               attr[ v.name.name ] = v.value;
             }
-            
           });
+          if (attr.onClick) {
+            node.openingElement.attributes = node.openingElement.attributes.filter(x => x.name.name !== 'onClick')
+          }
           path.replaceWith(createJSX('div', attr, [path.node]))
         }
       }

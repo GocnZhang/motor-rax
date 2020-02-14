@@ -49,17 +49,6 @@ function transformComTemplate(parsed, options, code) {
   const { ast, templateAST, imported, usingComponents } = parsed;
   const importComponents = []
   traverse(templateAST, {
-    JSXText(path) {
-      // <View>hello</View> => <View><text>hello</text></View>
-      const { node, parentPath } = path;
-      const openTagName = parentPath.node.openingElement.name;
-      if(t.isJSXElement(parentPath)
-      && path.node.value
-      && path.node.value.trim().length
-      && (t.isJSXIdentifier(openTagName, { name: 'div' }) || t.isJSXIdentifier(openTagName, { name: 'motor-rax-link' }))) {
-        path.replaceWith(createJSX('text', {}, [path.node]));
-      }
-    },
     JSXElement: {
       exit(path) {
         const { node: {
@@ -93,7 +82,10 @@ function transformComTemplate(parsed, options, code) {
       }
     }
   })
-  return importComponents;
+  return {
+    importComponents,
+    templateAST
+  }
 }
 /**
  * Extract JSXElement path.
@@ -108,7 +100,7 @@ module.exports = {
   },
   generate(ret, parsed, options) {
     if (parsed[TEMPLATE_AST]) {
-      const importComponents = transformComTemplate(parsed, options);
+      const { importComponents } = transformComTemplate(parsed, options);
       ret.importComponents = ret.importComponents ? ret.importComponents.concat(importComponents) : importComponents;
       const children = parsed[TEMPLATE_AST].children || [];
       const lastTemplateDefineIdx = findIndex(children,

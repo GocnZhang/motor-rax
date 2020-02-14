@@ -7,7 +7,7 @@ const {
 } = require('../jsx-plus');
 const { parseExpression } = require('../../parser');
 const genExpression = require('../../codegen/genExpression');
-const adapter = require('../../adapter').ali;
+const adapter = require('../../adapter').quickapp;
 
 describe('Directives', () => {
   describe('list', () => {
@@ -21,12 +21,12 @@ describe('Directives', () => {
       _transformList(ast, code, adapter);
       expect(genExpression(ast))
         .toEqual(`<View>
-        <block a:for={array.map((val, index) => {
+        <block for={array.map((val, index) => {
     return {
       val: val,
       index: index
     };
-  })} a:for-item="val" a:for-index="index"><View>{val}</View></block>
+  })}><View>{val}</View></block>
       </View>`);
     });
 
@@ -43,18 +43,18 @@ describe('Directives', () => {
       _transformList(ast, code, adapter);
       expect(genExpression(ast))
         .toEqual(`<View>
-        <block a:for={array.map((item, index) => {
+        <block for={array.map((item, index) => {
     return {
-      item: item.map((item2, index) => {
+      item: item.map((item2, index0) => {
         return {
           item2: item2,
-          index: index
+          index0: index0
         };
       }),
       index: index
     };
-  })} a:for-item="item" a:for-index="index"><View>
-          <block a:for={item} a:for-item="item2" a:for-index="index"><View>{item2}
+  })}><View>
+          <block for={item}><View>{item2}
         </View></block>
       </View></block>
 </View>`);
@@ -67,7 +67,7 @@ describe('Directives', () => {
         <View x-if={value}></View>
       `);
       _transformCondition(ast, adapter);
-      expect(genExpression(ast)).toEqual('<View a:if={value}></View>');
+      expect(genExpression(ast)).toEqual('<View if={value}></View>');
     });
   });
 

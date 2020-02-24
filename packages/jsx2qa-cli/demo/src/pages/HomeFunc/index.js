@@ -27,34 +27,34 @@ export default function Index() {
     [count],
   );
   console.log('memoizedValue', memoizedValue, memoizedCallback());
-  // const [list, setList] = useState([1,2,3]);
-  // function onCountClick() {
-  //   setCount(count+1)
-  // }
-  // useLayoutEffect(() => {
-  //   console.log('useEffect excuted');
-  //   setCount(99)
-  // }, ['count']);
+  const [list, setList] = useState([1,2,3]);
+  function onCountClick() {
+    setCount(count+1)
+  }
+  useLayoutEffect(() => {
+    console.log('useEffect excuted');
+    setCount(99)
+  }, ['count']);
 
-  // usePageShow(() => {
-  //   console.log('usePageShow excuted');
-  // })
+  usePageShow(() => {
+    console.log('usePageShow excuted');
+  })
 
-  // usePageShow(() => {
-  //   console.log('usePageShow excuted11111111');
-  // })
+  usePageShow(() => {
+    console.log('usePageShow excuted11111111');
+  })
 
-  // usePageHide(() => {
-  //   console.log('usePageHide excuted');
-  // })
+  usePageHide(() => {
+    console.log('usePageHide excuted');
+  })
 
-  // useBackPress(() => {
-  //   console.log('useBackPress excuted')
-  // })
+  useBackPress(() => {
+    console.log('useBackPress excuted')
+  })
 
-  // useMenuPress(() => {
-  //   console.log('useBackPress excuted')
-  // })
+  useMenuPress(() => {
+    console.log('useBackPress excuted')
+  })
 
   function setCountFunc() {
     setCount(count+1);
@@ -62,9 +62,9 @@ export default function Index() {
 
   return <View class="demo-wrap">
       <text onClick={setCountFunc}>点我试试</text>
-      {/* <input ref={inputEl} type="text" placeholder="这是一个input" />
-	    <View onClick={onButtonClick}>Focus the input</View> */}
-      {/* <View><Text class="demo-title">functional component page</Text></View>
+      <input ref={inputEl} type="text" placeholder="这是一个input" />
+	    <View onClick={onButtonClick}>Focus the input</View>
+      <View><Text class="demo-title">functional component page</Text></View>
       <View class="demo-block">
         <View><Text class="demo-title">样式测试</Text></View>
         <View><text class="demo-subtitle" style="color: red">1.内联字符串</text></View>
@@ -88,16 +88,16 @@ export default function Index() {
       </View>
 
       <span onclick={onCountClick}>xxxxxxx点我</span>
-      {count} */}
+      {count}
       <View>The theme is {context.theme}.</View>;
       {/* <Color colorContext={colorContext}>
         <View>
           <Buttons colorContext={colorContext}></Buttons>
-          <ShowArea colorContext={colorContext}></ShowArea> 
+          <ShowArea colorContext={colorContext}></ShowArea>
         </View>
       </Color> */}
-      {/* <Demo>
+      <Demo>
         <View x-memo>123{count}</View>
-      </Demo> */}
+      </Demo>
     </View>
 }

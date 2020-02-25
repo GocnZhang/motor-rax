@@ -1,4 +1,43 @@
-import { navigateTo, redirectTo, navigateBack } from '@@ADAPTER@@';
+/* eslint-disable import/no-extraneous-dependencies */
+/* global my, wx */
+import { getMiniAppHistory } from './history';
+import { isMiniApp, isWeChatMiniProgram, isQuickapp } from 'universal-env';
+
+let apiCore;
+
+if (isMiniApp) {
+  apiCore = my;
+} else if (isWeChatMiniProgram) {
+  apiCore = wx;
+} else if (isQuickapp) {
+  apiCore = require('@system.router');
+}
+
+function redirectTo(options) {
+  if (isQuickapp) {
+    options.uri = options.url;
+    apiCore.replace(options);
+  } else {
+    apiCore.redirectTo(options);
+  }
+}
+
+function navigateTo(options) {
+  if (isQuickapp) {
+    options.uri = options.url;
+    apiCore.push(options);
+  } else {
+    apiCore.navigateTo(options);
+  }
+}
+
+function navigateBack(options) {
+  if (isQuickapp) {
+    apiCore.back();
+  } else {
+    apiCore.navigateBack(options);
+  }
+}
 
 let __routerMap = {};
 
@@ -15,11 +54,11 @@ export function __updateRouterMap(appConfig) {
  * @param Klass
  */
 export function withRouter(Klass) {
-  if (Klass) Klass.defaultProps = Klass.defaultProps || {};
-  Object.assign(Klass.defaultProps, {
-    router,
-    history: router.history,
-    location: router.history.location,
+  if (Klass) Klass.props = Klass.props || {};
+  const history = getMiniAppHistory();
+  Object.assign(Klass.props, {
+    history: history,
+    location: history.location,
   });
 
   return Klass;

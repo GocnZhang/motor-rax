@@ -4,7 +4,8 @@ import sameValue from './sameValue';
 import isFunction from './isFunction';
 import { COMPONENT_DID_MOUNT, COMPONENT_DID_UPDATE, COMPONENT_WILL_UNMOUNT } from './cycles';
 import { enqueueRender } from './enqueueRender';
-import { createMiniAppHistory } from '@@HISTORY@@';
+import { createMiniAppHistory } from './history';
+import { getRef } from './adapter/index';
 
 const history = createMiniAppHistory();
 
@@ -166,7 +167,7 @@ export function useImperativeHandle(ref, create, inputs) {
 
 export function useRef(initialValue, name) {
   var currentInstance = getCurrentRenderingInstance();
-  return currentInstance._internal.$element(name) || {}
+  return getRef.call(currentInstance, initialValue, name);
 }
 
 export function useCallback(callback, inputs) {

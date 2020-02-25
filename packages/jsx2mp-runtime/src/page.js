@@ -1,3 +1,4 @@
+import { isQuickapp } from 'universal-env';
 import isFunction from './isFunction';
 import {
   ON_SHOW,
@@ -12,43 +13,56 @@ import {
   ON_MENU_PRESS
 } from './cycles';
 import { useEffect } from './hooks';
-import { getMiniAppHistory } from '@@HISTORY@@';
+import { getMiniAppHistory } from './history';
+import { getPageInstance } from './pageInstanceMap';
 
 const history = getMiniAppHistory();
 
 export const cycles = {};
 
 export function usePageEffect(cycle, callback) {
-  switch (cycle) {
-    case ON_SHOW:
-    case ON_HIDE:
-    case ON_PAGE_SCROLL:
-    case ON_SHARE_APP_MESSAGE:
-    case ON_REACH_BOTTOM:
-    case ON_PULL_DOWN_REFRESH:
-    case ON_TAB_ITEM_TAP:
-    case ON_TITLE_CLICK:
-    case ON_BACK_PRESS: 
-    case ON_MENU_PRESS:
-      // ON_SHOW is before than Component init
-      if (cycle === ON_SHOW) {
-        return callback();
-      }
-      const pageId = history && history.location._pageId;
-      useEffect(() => {
-        if (isFunction(callback)) {
+  if (isFunction(callback)) {
+    switch (cycle) {
+      case ON_SHOW:
+      case ON_HIDE:
+      case ON_PAGE_SCROLL:
+      case ON_SHARE_APP_MESSAGE:
+      case ON_REACH_BOTTOM:
+      case ON_PULL_DOWN_REFRESH:
+      case ON_TAB_ITEM_TAP:
+      case ON_TITLE_CLICK:
+      case ON_BACK_PRESS:
+      case ON_MENU_PRESS:
+        // ON_SHOW is before than Component init
+        if (isQuickapp && cycle === ON_SHOW) {
+          return callback();
+        }
+        const pageId = history && history.location._pageId;
+        useEffect(() => {
           if (!cycles[pageId]) {
             cycles[pageId] = {};
           }
           if (!cycles[pageId][cycle]) {
             cycles[pageId][cycle] = [];
           }
-          cycles[pageId][cycle].push(callback);
-        }
-      }, []);
-      break;
-    default:
-      throw new Error('Unsupported page cycle ' + cycle);
+          if (cycle === ON_SHARE_APP_MESSAGE && cycles[pageId][cycle].length > 1) {
+            console.warn('useShareAppMessage can only receive one callback function.');
+          } else {
+            cycles[pageId][cycle].push(callback);
+          }
+
+          // Define page instance life cycle when the cycle is used
+          const pageInstance = getPageInstance(pageId);
+          if (!pageInstance._internal[cycle]) {
+            pageInstance._internal[cycle] = (e) => {
+              return pageInstance._trigger(cycle, e);
+            };
+          }
+        }, []);
+        break;
+      default:
+        throw new Error('Unsupported page cycle ' + cycle);
+    }
   }
 }
 
@@ -65,6 +79,11 @@ export function usePageScroll(callback) {
 }
 
 export function useShareAppMessage(callback) {
+  console.warn('useShareAppMessage() will be deprecated soon, please use usePageShare() instead.');
+  return usePageEffect(ON_SHARE_APP_MESSAGE, callback);
+}
+
+export function usePageShare(callback) {
   return usePageEffect(ON_SHARE_APP_MESSAGE, callback);
 }
 

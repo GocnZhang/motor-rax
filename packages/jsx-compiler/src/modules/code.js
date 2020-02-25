@@ -6,7 +6,7 @@ const isClassComponent = require('../utils/isClassComponent');
 const isFunctionComponent = require('../utils/isFunctionComponent');
 const traverse = require('../utils/traverseNodePath');
 const { isNpmModule, isWeexModule } = require('../utils/checkModule');
-const { getNpmName, normalizeFileName } = require('../utils/pathHelper');
+const { getNpmName, normalizeFileName, addRelativePathPrefix } = require('../utils/pathHelper');
 
 const RAX_PACKAGE = 'rax';
 const SUPER_COMPONENT = 'Component';
@@ -17,6 +17,7 @@ const CREATE_STYLE = 'createStyle';
 const CLASSNAMES = 'classnames';
 const CREATE_CONTEXT = 'createContext';
 const FORWARD_REF = 'forwardRef';
+const CREATE_REF = 'createRef';
 
 const SAFE_SUPER_COMPONENT = '__component__';
 const SAFE_CREATE_COMPONENT = '__create_component__';
@@ -36,7 +37,7 @@ const USE_IMPERATIVEHANDLE = 'useImperativeHandle';
 const EXPORTED_DEF = '__def__';
 const RUNTIME = 'jsx2mp-runtime';
 
-const coreMethodList = [USE_EFFECT, USE_STATE, USE_CONTEXT, USE_REF,
+const coreMethodList = [USE_EFFECT, USE_STATE, USE_CONTEXT, USE_REF, CREATE_REF,
   USE_REDUCER, USE_LAYOUT_EFFECT, USE_IMPERATIVEHANDLE, FORWARD_REF, CREATE_CONTEXT];
 
 const getRuntimeByPlatform = (platform) => `${RUNTIME}/dist/jsx2mp-runtime.${platform}.esm`;
@@ -62,7 +63,7 @@ function getConstructor(type) {
 module.exports = {
   parse(parsed, code, options) {
     const { ast, programPath, defaultExportedPath, exportComponentPath, renderFunctionPath,
-      useCreateStyle, useClassnames, dynamicValue, dynamicEvents, imported,
+      useCreateStyle, useClassnames, dynamicValue, dynamicRef, dynamicStyle, dynamicEvents, imported,
       contextList, refs, componentDependentProps, renderItemFunctions, eventHandler, eventHandlers = [] } = parsed;
     const { platform, type, cwd, outputPath, sourcePath, resourcePath, disableCopyNpm } = options;
     if (type !== 'app' && (!defaultExportedPath || !defaultExportedPath.node)) {
@@ -177,7 +178,7 @@ module.exports = {
           parentNode && parentNode.remove && parentNode.remove();
         }
       });
-      addUpdateData(dynamicValue, renderItemFunctions, renderFunctionPath);
+      addUpdateData(dynamicValue, dynamicRef, dynamicStyle, renderItemFunctions, renderFunctionPath);
       addUpdateEvent(dynamicEvents, eventHandler, renderFunctionPath);
       addProviderIniter(contextList, renderFunctionPath);
       addRegisterRefs(refs, renderFunctionPath);
@@ -201,8 +202,7 @@ function genTagIdExp(expressions) {
 function getRuntimePath(outputPath, targetFileDir, platform, disableCopyNpm) {
   let runtimePath = getRuntimeByPlatform(platform.type);
   if (!disableCopyNpm) {
-    runtimePath = relative(targetFileDir, join(outputPath, 'npm', RUNTIME));
-    runtimePath = runtimePath[0] !== '.' ? './' + runtimePath : runtimePath;
+    runtimePath = addRelativePathPrefix(relative(targetFileDir, join(outputPath, 'npm', RUNTIME)));
   }
   return runtimePath;
 }
@@ -295,7 +295,7 @@ function renameNpmModules(ast, npmRelativePath, filename, cwd) {
     } else {
       ret = join(prefix, value.replace(npmName, realNpmName));
     }
-    if (ret[0] !== '.') ret = './' + ret;
+    ret = addRelativePathPrefix(ret);
     // ret => '../npm/_ali/universal-toast/lib/index.js
 
     return t.stringLiteral(normalizeFileName(ret));
@@ -448,11 +448,13 @@ function collectCoreMethods(raxExported) {
   return vaildList;
 }
 
-function addUpdateData(dynamicValue, renderItemFunctions, renderFunctionPath) {
+function addUpdateData(dynamicValue, dynamicRef, dynamicStyle, renderItemFunctions, renderFunctionPath) {
   const dataProperties = [];
-
-  Object.keys(dynamicValue).forEach(name => {
-    dataProperties.push(t.objectProperty(t.stringLiteral(name), dynamicValue[name]));
+  const dataStore = dynamicValue.getStore();
+  const refStore = dynamicRef.getStore();
+  const styleStore = dynamicStyle.getStore();
+  [...dataStore, ...refStore, ...styleStore].forEach(({name, value}) => {
+    dataProperties.push(t.objectProperty(t.stringLiteral(name), value));
   });
 
   renderItemFunctions.map(renderItemFn => {
@@ -496,8 +498,8 @@ function addProviderIniter(contextList, renderFunctionPath) {
         t.identifier('Provider')
       );
       const fnBody = renderFunctionPath.node.body.body;
-
-      fnBody.push(t.expressionStatement(t.callExpression(ProviderIniter, [ctx.contextInitValue])));
+      const args = ctx.contextInitValue ? [ctx.contextInitValue] : [];
+      fnBody.push(t.expressionStatement(t.callExpression(ProviderIniter, args)));
     });
   }
 }
@@ -524,24 +526,27 @@ function addRegisterRefs(refs, renderFunctionPath) {
   const scopedRefs = [];
   const stringRefs = [];
   refs.map(ref => {
-    if (renderFunctionPath.scope.hasBinding(ref.value)) {
-      scopedRefs.push(ref);
-    } else {
+    if (t.isStringLiteral(ref.method)) {
       stringRefs.push(ref);
+    } else if (t.isIdentifier(ref.method) && !renderFunctionPath.scope.hasBinding(ref.name.value)) {
+      stringRefs.push(ref);
+    } else {
+      // For this.xxx or difficult expression
+      scopedRefs.push(ref);
     }
   });
   if (scopedRefs.length > 0) {
     fnBody.push(t.expressionStatement(t.callExpression(registerRefsMethods, [
       t.arrayExpression(scopedRefs.map(ref => {
-        return t.objectExpression([t.objectProperty(t.stringLiteral('name'), ref),
-          t.objectProperty(t.stringLiteral('method'), t.identifier(ref.value))]);
+        return t.objectExpression([t.objectProperty(t.stringLiteral('name'), ref.name),
+          t.objectProperty(t.stringLiteral('method'), ref.method )]);
       }))
     ])));
   }
   if (stringRefs.length > 0) {
     fnBody.unshift(t.expressionStatement(t.callExpression(registerRefsMethods, [
       t.arrayExpression(stringRefs.map(ref => {
-        return t.objectExpression([t.objectProperty(t.stringLiteral('name'), ref)]);
+        return t.objectExpression([t.objectProperty(t.stringLiteral('name'), ref.method)]);
       }))
     ])));
   }
@@ -559,7 +564,7 @@ function ensureIndexInPath(value, resourcePath) {
     extensions: ['.js', '.ts']
   });
   const result = relative(dirname(resourcePath), target);
-  return removeJSExtension(result[0] === '.' ? result : './' + result);
+  return removeJSExtension(addRelativePathPrefix(result));
 };
 
 function removeJSExtension(filePath) {

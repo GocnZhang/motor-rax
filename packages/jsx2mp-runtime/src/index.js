@@ -1,5 +1,5 @@
-import { runApp, createPage, createComponent } from './bridge';
-import { useAppEffect, useAppLaunch } from './app';
+import { runApp, createComponent, createPage } from './bridge';
+import { useAppEffect, useAppLaunch, useAppShow, useAppHide, useAppShare, useAppError } from './app';
 import {
   usePageEffect,
   usePageShow,
@@ -8,6 +8,7 @@ import {
   usePageReachBottom,
   usePageScroll,
   useShareAppMessage,
+  usePageShare,
   useTabItemTap,
   useTitleClick,
   useBackPress,
@@ -18,6 +19,8 @@ import Component from './component';
 import createStyle from './createStyle';
 import createContext from './createContext';
 import classnames from './classnames';
+import createRef from './createRef';
+import { addNativeEventListener, registerNativeEventListeners } from './nativeEventListener';
 
 export {
   runApp,
@@ -26,17 +29,24 @@ export {
   createStyle,
   createContext,
   classnames,
+  createRef,
 
   Component,
 
   // Cycles
   useAppLaunch,
+  useAppShow,
+  useAppHide,
+  useAppShare,
+  useAppError,
+
   usePageShow,
   usePageHide,
   usePagePullDownRefresh,
   usePageReachBottom,
   usePageScroll,
   useShareAppMessage,
+  usePageShare,
   useTabItemTap,
   useTitleClick,
   useBackPress,
@@ -48,6 +58,10 @@ export {
 
   // Router
   withRouter,
+
+  // Native events
+  addNativeEventListener,
+  registerNativeEventListeners
 };
 
 /* hooks */

@@ -4,6 +4,7 @@ const traverse = require('../utils/traverseNodePath');
 const TEMPLATE_AST = 'templateAST';
 const DynamicBinding = require('../utils/DynamicBinding');
 const getListItem = require('../utils/getListItem');
+const isSlotScopeNode = require('../utils/isSlotScopeNode');
 
 /**
  * Transform style object.
@@ -13,8 +14,8 @@ const getListItem = require('../utils/getListItem');
  *          return { _style0 };
  */
 function transformStyle(ast) {
-  const dynamicValue = new DynamicBinding('_s');
-
+  const dynamicStyle = new DynamicBinding('_s');
+  let useCreateStyle = false;
   traverse(ast, {
     JSXAttribute(path) {
       const { node } = path;
@@ -22,36 +23,36 @@ function transformStyle(ast) {
         const styleObjectExpression = node.value.expression;
 
         // <tag style="{{ _s0 }}" />
-        const name = dynamicValue.add({
+        const name = dynamicStyle.add({
           expression: t.callExpression(t.identifier('__create_style__'), [styleObjectExpression]),
         });
         node.value = t.stringLiteral('{{' + name + '}}');
+        useCreateStyle = true;
       }
     },
   });
-  return dynamicValue.getStore();
+  return {
+    useCreateStyle,
+    dynamicStyle
+  };
 }
 
 function shouldReplace(path) {
   const { node } = path;
   if (t.isJSXExpressionContainer(node.value) && node.name.name === 'style') {
-    return !getListItem(node.value.expression);
+    return !(getListItem(node.value.expression) || isSlotScopeNode(node.value.expression));
   }
   return false;
 }
 
 module.exports = {
   parse(parsed, code, options) {
-    const dynamicValues = transformStyle(parsed[TEMPLATE_AST]);
-    const dynamicValue = dynamicValues.reduce((prev, curr, vals) => {
-      const name = curr.name;
-      prev[name] = curr.value;
-      return prev;
-    }, {});
-    if (dynamicValues.length > 0) {
-      parsed.dynamicValue = Object.assign({}, parsed.dynamicValue, dynamicValue);
-      parsed.useCreateStyle = true;
+    const { useCreateStyle, dynamicStyle } = transformStyle(parsed[TEMPLATE_AST]);
+    if (!parsed.useCreateStyle) {
+      parsed.useCreateStyle = useCreateStyle;
     }
+    // Set global dynamic style value
+    parsed.dynamicStyle = dynamicStyle;
   },
 
   _transform: transformStyle,

@@ -2,7 +2,7 @@
 /**
  * Base Component class definition.
  */
-import { updateData } from '@@ADAPTER@@';
+import { getId, updateData, registerRef } from './adapter/index';
 import Host from './host';
 import {updateChildProps, removeComponentProps, getComponentProps, setComponentProps} from './updater';
 import {enqueueRender} from './enqueueRender';
@@ -27,12 +27,11 @@ import {
   COMPONENT_WILL_RECEIVE_PROPS, COMPONENT_WILL_UPDATE,
 } from './cycles';
 import { cycles as pageCycles } from './page';
-import getId from '@@GETID@@';
 
 export default class Component {
-  constructor() {
+  constructor(props) {
     this.state = {};
-    this.props = {};
+    this.props = props;
 
     this.__dependencies = {}; // for context
 
@@ -109,11 +108,7 @@ export default class Component {
   _registerRefs(refs) {
     this.refs = {};
     refs.forEach(({name, method}) => {
-      setTimeout(() => {
-        Object.assign(method, {
-          current: this._internal.$element(name)
-        })
-      }, 0)
+      registerRef.call(this, name, method);
     });
   }
 
@@ -255,6 +250,8 @@ export default class Component {
    */
   _trigger(cycle, ...args) {
     let ret;
+    const pageId = this.instanceId;
+
     switch (cycle) {
       case COMPONENT_WILL_MOUNT:
       case COMPONENT_DID_MOUNT:
@@ -275,11 +272,8 @@ export default class Component {
         if (this._cycles.hasOwnProperty(cycle)) {
           this._cycles[cycle].forEach(fn => fn(...args));
         }
-        const pageId = this.instanceId;
-        if (pageCycles[pageId]) {
-          if (pageCycles[pageId][cycle]) {
-            pageCycles[pageId][cycle].forEach(fn => fn(...args));
-          }
+        if (pageCycles[pageId] && pageCycles[pageId][cycle]) {
+          pageCycles[pageId][cycle].forEach(fn => fn(...args));
         }
         break;
 
@@ -297,6 +291,11 @@ export default class Component {
 
       case ON_SHARE_APP_MESSAGE:
         if (isFunction(this[cycle])) ret = this[cycle](...args);
+        if (pageCycles[pageId] && pageCycles[pageId][cycle]) {
+          // There will be one callback fn for shareAppMessage at most
+          const fn = pageCycles[pageId][cycle][0];
+          ret = fn(...args);
+        }
         break;
     }
     return ret;

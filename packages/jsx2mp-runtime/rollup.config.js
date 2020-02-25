@@ -64,8 +64,8 @@ function getBabelConfig({ platform = 'ali' }) {
     plugins: [
       '@babel/plugin-proposal-class-properties',
 
-      // Support different adatpers replacement.
-      ['./scripts/import-adapter-replace-plugin', { platform }],
+      // Support remove different platform code.
+      ['./scripts/platform-plugin', { platform }],
     ]
   };
 }

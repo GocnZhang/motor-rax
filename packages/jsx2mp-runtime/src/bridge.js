@@ -101,7 +101,9 @@ function createProxyMethods(events) {
   const methods = {};
   if (Array.isArray(events)) {
     events.forEach(eventName => {
-      methods[eventName] = attachEvent;
+      methods[eventName] = function(...args) {
+        attachEvent.apply(this, [eventName].concat(args));
+      }
     });
   }
   return methods;

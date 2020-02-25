@@ -1,6 +1,6 @@
 import { isQuickapp } from 'universal-env';
 
-export default function(...args) {
+export default function(eventName, ...args) {
   if(isQuickapp) {
     // `this` point to page/component instance.
     const event = args[0];
